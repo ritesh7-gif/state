@@ -7,7 +7,7 @@ import PropertyDetailsModal from '../components/workspace/PropertyDetailsModal';
 import SettingsView from '../components/workspace/SettingsView';
 import '../styles/workspace.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
 // ---- Seed Data ----
 const SEED_PROPERTIES = [
@@ -224,7 +224,7 @@ const WorkspacePage = () => {
   // ---- Load data from backend ----
   useEffect(() => {
     const load = (ep, setter) => {
-      fetch(`${API_BASE}/api/${ep}`)
+      fetch(`${API_URL}/api/${ep}`)
         .then(r => {
           if (!r.ok) throw new Error();
           return r.json();
@@ -309,7 +309,7 @@ const WorkspacePage = () => {
       let finalMessage = messageText;
       // We removed the rigid System Context prefix so the AI can freely auto-route based on the user's actual intent.
 
-      const res = await fetch(`${API_BASE}/api/chat`, {
+      const res = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -500,7 +500,7 @@ const WorkspacePage = () => {
         break;
 
       case 'reset_booking':
-        fetch(`${API_BASE}/api/reset`, { method: 'POST' })
+        fetch(`${API_URL}/api/reset`, { method: 'POST' })
           .then(r => r.json())
           .then(data => {
             if (data.properties && Array.isArray(data.properties)) setProperties(data.properties);
@@ -538,7 +538,7 @@ const WorkspacePage = () => {
 
   const handleResetDataDirect = async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/reset`, { method: 'POST' });
+      const response = await fetch(`${API_URL}/api/reset`, { method: 'POST' });
       const data = await response.json();
       if (data.properties && Array.isArray(data.properties)) setProperties(data.properties);
       if (data.customers && Array.isArray(data.customers))  setCustomers(data.customers);
