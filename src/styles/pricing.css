@@ -1,0 +1,554 @@
+/* ==========================================================================
+   Pricing Section — Premium Light White Theme
+   Inspired by modern SaaS pricing (clean, elevated, with dark popular card)
+   ========================================================================== */
+
+/* ── Section Container ── */
+.pricing-section {
+  position: relative;
+  padding: 120px 2rem;
+  background: #ffffff;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Decorative Background Line (SVG-like curve) ── */
+.pricing-section::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: -200px;
+  right: -200px;
+  bottom: -100px;
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% 50%, rgba(37, 99, 235, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pricing-decorative-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.pricing-decorative-line svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140%;
+  height: 140%;
+  opacity: 0.07;
+}
+
+.pricing-decorative-line svg path {
+  fill: none;
+  stroke: #0f172a;
+  stroke-width: 2;
+}
+
+/* ── Section Header ── */
+.pricing-header {
+  text-align: center;
+  margin-bottom: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.pricing-eyebrow {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.pricing-header h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.pricing-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── Billing Toggle ── */
+.pricing-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 56px;
+  position: relative;
+  z-index: 1;
+}
+
+.pricing-toggle-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pricing-toggle-label.active {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.pricing-toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: none;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.pricing-toggle.yearly {
+  background: #0f172a;
+}
+
+.pricing-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.pricing-toggle.yearly .pricing-toggle-knob {
+  transform: translateX(24px);
+}
+
+.pricing-save-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.pricing-save-badge.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Cards Grid ── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+}
+
+@media (max-width: 960px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    gap: 24px;
+  }
+}
+
+/* ── Keyframe Animations ── */
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-80px) translateY(30px) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(8px) translateY(-4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(80px) translateY(30px) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-8px) translateY(-4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+@keyframes popUpCenter {
+  0% {
+    opacity: 0;
+    transform: translateY(80px) scale(0.88);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.06);
+  }
+  70% {
+    transform: translateY(4px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.04);
+  }
+}
+
+/* ── Pricing Card Base ── */
+.pricing-card {
+  padding: 40px 36px;
+  border-radius: 20px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(60px);
+  will-change: transform, opacity;
+}
+
+/* Center card — always visible, no entrance animation */
+.pricing-card.card-center {
+  opacity: 1;
+  transform: none;
+}
+
+/* Animation triggers — only side cards animate in */
+.pricing-card.card-left.visible {
+  animation: slideInFromLeft 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.1s;
+}
+
+.pricing-card.card-right.visible {
+  animation: slideInFromRight 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.3s;
+}
+
+/* ── Standard Card (Starter, Enterprise) ── */
+.pricing-card.standard {
+  background: #ffffff;
+  border: 1px solid #e8ecf1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.pricing-card.standard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  transform: translateY(-6px);
+}
+
+/* ── Popular Card (Professional) ── */
+.pricing-card.popular {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 20px 60px -12px rgba(15, 23, 42, 0.35),
+    0 8px 20px -6px rgba(15, 23, 42, 0.25);
+  padding: 48px 36px;
+  z-index: 2;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.pricing-card.popular:hover {
+  box-shadow: 
+    0 25px 70px -12px rgba(15, 23, 42, 0.45),
+    0 12px 24px -6px rgba(15, 23, 42, 0.3);
+  transform: translateY(-14px) scale(1.04);
+}
+
+/* ── Popular Badge ── */
+.pricing-popular-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+
+/* ── Card Content ── */
+.pricing-plan-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.pricing-card.standard .pricing-plan-name {
+  color: #0f172a;
+}
+
+.pricing-card.popular .pricing-plan-name {
+  color: #ffffff;
+}
+
+.pricing-plan-desc {
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.pricing-card.standard .pricing-plan-desc {
+  color: #64748b;
+}
+
+.pricing-card.popular .pricing-plan-desc {
+  color: #94a3b8;
+}
+
+/* ── Price Display ── */
+.pricing-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.pricing-price-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+
+.pricing-card.standard .pricing-price-value {
+  color: #0f172a;
+}
+
+.pricing-card.popular .pricing-price-value {
+  color: #ffffff;
+}
+
+.pricing-price-period {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.pricing-card.standard .pricing-price-period {
+  color: #94a3b8;
+}
+
+.pricing-card.popular .pricing-price-period {
+  color: #64748b;
+}
+
+.pricing-billing-note {
+  font-size: 0.78rem;
+  margin-bottom: 32px;
+}
+
+.pricing-card.standard .pricing-billing-note {
+  color: #94a3b8;
+}
+
+.pricing-card.popular .pricing-billing-note {
+  color: #475569;
+}
+
+/* ── CTA Button ── */
+.pricing-cta {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  border: none;
+  margin-bottom: 28px;
+}
+
+.pricing-card.standard .pricing-cta {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.pricing-card.standard .pricing-cta:hover {
+  background: #f8fafc;
+  border-color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.pricing-card.popular .pricing-cta {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1.5px solid transparent;
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
+}
+
+.pricing-card.popular .pricing-cta:hover {
+  background: #f1f5f9;
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Features List ── */
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pricing-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.pricing-card.standard .pricing-feature-item {
+  color: #334155;
+}
+
+.pricing-card.popular .pricing-feature-item {
+  color: #e2e8f0;
+}
+
+.pricing-feature-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+.pricing-card.standard .pricing-feature-icon {
+  color: #2563eb;
+}
+
+.pricing-card.popular .pricing-feature-icon {
+  color: #60a5fa;
+}
+
+/* ── Price Animation (number roll) ── */
+.pricing-price-animated {
+  display: inline-flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.pricing-price-digit {
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Card entrance animations — delays handled by keyframe animation-delay ── */
+
+/* ── Additional Hover Micro-animations ── */
+.pricing-card .pricing-feature-icon {
+  transition: transform 0.2s ease;
+}
+
+.pricing-card:hover .pricing-feature-icon {
+  transform: scale(1.1);
+}
+
+/* ── Confetti Canvas ── */
+.pricing-confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── Responsive adjustments ── */
+@media (max-width: 1100px) {
+  .pricing-grid {
+    max-width: 900px;
+  }
+  .pricing-card {
+    padding: 32px 28px;
+  }
+  .pricing-card.popular {
+    padding: 40px 28px;
+  }
+}
+
+@media (max-width: 960px) {
+  .pricing-section {
+    padding: 80px 1.5rem;
+  }
+  .pricing-header h2 {
+    font-size: 2.4rem;
+  }
+  .pricing-card.standard,
+  .pricing-card.popular {
+    padding: 36px 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pricing-header h2 {
+    font-size: 2rem;
+  }
+  .pricing-price-value {
+    font-size: 2.6rem;
+  }
+  .pricing-card {
+    padding: 28px 22px;
+  }
+}

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 
 const Navbar = () => {
   return (
     <nav className="lp-navbar animate-slide-down">
       <div className="container lp-nav-container">
-        <Link to="/" className="lp-nav-brand">
-          <Building2 className="lp-nav-logo-icon" size={24} />
-          RealState
+        <Link to="/" className="lp-nav-brand flex items-center gap-2">
+          <img src={logoImg} className="w-8 h-8 object-contain" alt="Realstate Logo" />
+          Realstate
         </Link>
 
         <div className="lp-nav-links">

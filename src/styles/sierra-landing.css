@@ -1,0 +1,497 @@
+/* src/styles/sierra-landing.css */
+
+
+.sierra-landing {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #ffffff;
+  overflow: hidden;
+  background-color: #000;
+}
+
+
+.sierra-video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.sierra-video-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02); 
+}
+
+.sierra-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* No color overlay, just raw video */
+  background: none;
+  pointer-events: none;
+}
+
+.sierra-content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.sierra-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 10%; /* Inwards from corners */
+  transition: padding 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .sierra-header {
+    padding: 20px 24px;
+  }
+}
+
+/* Hover & Scrolled state for the fixed navbar */
+.sierra-header:hover,
+.sierra-header.scrolled {
+  padding: 16px 10%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .sierra-header.scrolled {
+    padding: 14px 24px;
+  }
+}
+
+.sierra-header:hover .sierra-logo,
+.sierra-header.scrolled .sierra-logo {
+  color: #111827;
+}
+
+.sierra-header:hover .sierra-header-center a,
+.sierra-header.scrolled .sierra-header-center a {
+  color: rgba(17, 24, 39, 0.7);
+}
+
+.sierra-header:hover .sierra-header-center a:hover,
+.sierra-header.scrolled .sierra-header-center a:hover {
+  color: #111827;
+}
+
+.sierra-header:hover .sierra-link-btn,
+.sierra-header.scrolled .sierra-link-btn {
+  color: #111827;
+}
+
+.sierra-header:hover .sierra-pill-btn,
+.sierra-header.scrolled .sierra-pill-btn {
+  background-color: rgba(17, 24, 39, 0.05);
+  color: #111827;
+  border-color: rgba(17, 24, 39, 0.2);
+}
+
+.sierra-header:hover .sierra-pill-btn:hover,
+.sierra-header.scrolled .sierra-pill-btn:hover {
+  background-color: rgba(17, 24, 39, 0.1);
+}
+
+.sierra-header-left {
+  flex: 1;
+}
+
+.sierra-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
+.sierra-header-center {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+@media (max-width: 900px) {
+  .sierra-header-center {
+    display: none;
+  }
+}
+
+.sierra-nav-item {
+  position: relative;
+  padding: 12px 0; /* Hit area padding */
+}
+
+.sierra-nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-decoration: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+}
+
+.sierra-nav-link:hover {
+  color: #ffffff !important;
+}
+
+.sierra-header:hover .sierra-nav-link,
+.sierra-header.scrolled .sierra-nav-link {
+  color: rgba(17, 24, 39, 0.7) !important;
+}
+
+.sierra-header:hover .sierra-nav-link:hover,
+.sierra-header.scrolled .sierra-nav-link:hover {
+  color: #111827 !important;
+}
+
+/* Mega Menu Dropdown Card */
+.sierra-dropdown-card {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: 460px;
+  background: rgba(20, 20, 22, 0.85); /* Dark glass by default to contrast video */
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2000;
+  margin-top: 4px;
+}
+
+.sierra-dropdown-single {
+  width: 230px;
+  grid-template-columns: 1fr;
+}
+
+.sierra-nav-item:hover .sierra-dropdown-card {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Scrolled & Hover state - Light white glass card */
+.sierra-header:hover .sierra-dropdown-card,
+.sierra-header.scrolled .sierra-dropdown-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+}
+
+/* Dropdown columns layout */
+.sierra-dropdown-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.sierra-dropdown-column h4 {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4) !important;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.sierra-header:hover .sierra-dropdown-column h4,
+.sierra-header.scrolled .sierra-dropdown-column h4 {
+  color: rgba(17, 24, 39, 0.4) !important;
+}
+
+.sierra-dropdown-column a {
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-decoration: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.sierra-dropdown-column a:hover {
+  color: #3b82f6 !important;
+  transform: translateX(4px);
+}
+
+.sierra-header:hover .sierra-dropdown-column a,
+.sierra-header.scrolled .sierra-dropdown-column a {
+  color: rgba(17, 24, 39, 0.8) !important;
+}
+
+.sierra-header:hover .sierra-dropdown-column a:hover,
+.sierra-header.scrolled .sierra-dropdown-column a:hover {
+  color: #3b82f6 !important;
+}
+
+.sierra-header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+}
+
+.sierra-link-btn {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.sierra-link-btn:hover {
+  opacity: 0.8;
+}
+
+.sierra-pill-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 99px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sierra-pill-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.sierra-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 48px;
+  max-width: 800px;
+  margin-top: -60px; /* Vertically center slightly above middle */
+  margin-left: 12%; /* Pushed to the middle-left area */
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .sierra-hero {
+    margin-left: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .sierra-hero {
+    padding: 0 24px;
+    margin-left: 0;
+  }
+}
+
+.sierra-hero h1 {
+  font-size: clamp(3rem, 5.5vw, 5.5rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 40px !important; /* Adjusted gap to match the requested closer spacing */
+  color: #ffffff !important; /* Force white text over the video background */
+  text-shadow: 0 2px 15px rgba(0,0,0,0.45);
+}
+
+.sierra-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  color: #000000;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 32px;
+  border-radius: 99px;
+  width: fit-content;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.sierra-hero-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.sierra-floating-chat-container {
+  position: absolute;
+  bottom: 80px; /* Moved up from bottom edge */
+  right: 10%; /* Aligned inwards with the logo/buttons grid */
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .sierra-floating-chat-container {
+    bottom: 24px;
+    right: 24px;
+    align-items: center;
+  }
+}
+
+.sierra-chat-box {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 16px 20px;
+  width: 340px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+@media (max-width: 768px) {
+  .sierra-chat-box {
+    width: calc(100vw - 48px);
+  }
+}
+
+.sierra-chat-user {
+  margin-right: 48px; /* Offset to the left to match image */
+}
+
+@media (max-width: 768px) {
+  .sierra-chat-user {
+    margin-right: 0;
+  }
+}
+
+.hidden-state {
+  display: none;
+}
+
+.pop-in {
+  animation: chat-pop-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.blur-out {
+  animation: chat-blur-out 0.8s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes chat-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chat-blur-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+    filter: blur(10px);
+  }
+}
+
+.sierra-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+}
+
+.sierra-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.sierra-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sierra-chat-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+.sierra-scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 48px;
+  background: rgba(17, 24, 39, 0.1);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.sierra-scroll-indicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #111827;
+  animation: scroll-down 2s ease-in-out infinite;
+}
+
+@keyframes scroll-down {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
