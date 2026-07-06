@@ -89,7 +89,7 @@ const AnimatedChatWidget = () => {
             layout
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -60, scale: 0.85, filter: 'blur(12px)' }}
+            exit={{ opacity: 0, y: -60, scale: 0.85 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className={`sierra-chat-box ${msg.type === 'agent' ? 'sierra-chat-agent' : 'sierra-chat-user'}`}
           >
@@ -118,22 +118,59 @@ const AnimatedChatWidget = () => {
   );
 };
 
-const BackgroundVideo = React.memo(() => (
-  <div className="sierra-video-wrapper">
-    <video 
-      className="sierra-video-bg" 
-      autoPlay 
-      muted 
-      loop 
-      playsInline
-      preload="auto"
-      disablePictureInPicture
-    >
-      <source src={bgVideo} type="video/mp4" />
-    </video>
-    <div className="sierra-video-overlay"></div>
-  </div>
-));
+const BackgroundVideo = React.memo(() => {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const videoRef = React.useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!videoRef.current) return;
+          if (entry.isIntersecting) {
+            videoRef.current.play().catch(() => {});
+          } else {
+            videoRef.current.pause();
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => {
+      if (videoRef.current) {
+        observer.unobserve(videoRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="sierra-video-wrapper" style={{ backgroundColor: '#000' }}>
+      <video 
+        ref={videoRef}
+        className="sierra-video-bg" 
+        autoPlay 
+        muted 
+        loop 
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        onCanPlayThrough={() => setIsVideoLoaded(true)}
+        style={{ 
+          opacity: isVideoLoaded ? 1 : 0, 
+          transition: 'opacity 0.5s ease'
+        }}
+      >
+        <source src={bgVideo} type="video/mp4" />
+      </video>
+      <div className="sierra-video-overlay"></div>
+    </div>
+  );
+});
 
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
