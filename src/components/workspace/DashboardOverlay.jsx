@@ -62,7 +62,7 @@ const DashboardOverlay = ({
   };
 
   const handleExport = () => {
-    setToastMessage('Report exported as RealState_Sales_Summary.csv successfully!');
+    setToastMessage('Report exported as PropAgentOS_Sales_Summary.csv successfully!');
     setTimeout(() => {
       setToastMessage('');
     }, 3000);
@@ -1153,7 +1153,7 @@ const DashboardOverlay = ({
           </div>
 
           {/* Tab lists content */}
-          <div style={{ flex: 1, overflowX: 'auto', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+          <div className="custom-scrollbar" style={{ flex: 1, overflow: 'auto', borderRadius: '12px', border: '1px solid var(--border)', maxHeight: '500px' }}>
             
             {/* TAB 1: BOOKINGS */}
             {activeTab === 'bookings' && (

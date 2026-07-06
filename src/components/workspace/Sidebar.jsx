@@ -129,7 +129,7 @@ const Sidebar = ({
               <div className="ew-sb-logo-static">
                 <Building2 size={16} color="white" strokeWidth={2.5} />
               </div>
-              <span className="ew-sb-brand-name">RealState AI</span>
+              <span className="ew-sb-brand-name">PropAgentOS</span>
             </div>
             <button
               className="ew-sb-toggle-btn-corner"

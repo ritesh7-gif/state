@@ -29,14 +29,20 @@ const LoginPage = () => {
 
   return (
     <div className="pro-login-container">
-      {/* Left Panel */}
-      <div className="pro-login-left">
+      <img 
+        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
+        alt="Luxury Real Estate" 
+        className="pro-login-bg-image"
+      />
+      <div className="pro-login-bg-overlay"></div>
+
+      <div className="pro-login-content">
         <div className="pro-login-card">
           <div className="pro-login-logo">
             <div className="pro-login-logo-icon">
               <Building2 size={22} color="white" strokeWidth={2.5} />
             </div>
-            <span className="pro-login-logo-text">RealState Exclusive</span>
+            <span className="pro-login-logo-text">PropAgentOS Exclusive</span>
           </div>
 
           <h1 className="pro-login-title">Welcome Back</h1>
@@ -101,35 +107,10 @@ const LoginPage = () => {
             Continue as Guest
             <ArrowRight size={18} style={{ marginLeft: 'auto' }} />
           </button>
-        </div>
-        
-        <p className="pro-footer-text">
-          RealState Exclusive · Luxury Edition © 2026
-        </p>
-      </div>
 
-      {/* Right Panel */}
-      <div className="pro-login-right">
-        <img 
-          src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
-          alt="Luxury Real Estate" 
-          className="pro-login-image"
-        />
-        <div className="pro-login-overlay">
-          <div className="pro-testimonial">
-            <p className="pro-testimonial-text">
-              "The most seamless and sophisticated property acquisition experience we have ever encountered. Truly redefining luxury real estate."
-            </p>
-            <div className="pro-testimonial-author">
-              <div className="pro-avatar">
-                EW
-              </div>
-              <div className="pro-author-info">
-                <h4>Elena Wright</h4>
-                <p>Global Estates Director</p>
-              </div>
-            </div>
-          </div>
+          <p className="pro-footer-text">
+            PropAgentOS Exclusive · Luxury Edition © 2026
+          </p>
         </div>
       </div>
     </div>

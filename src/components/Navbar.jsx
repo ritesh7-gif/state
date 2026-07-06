@@ -6,9 +6,18 @@ const Navbar = () => {
   return (
     <nav className="lp-navbar animate-slide-down">
       <div className="container lp-nav-container">
-        <Link to="/" className="lp-nav-brand flex items-center gap-2">
-          <img src={logoImg} className="w-8 h-8 object-contain" alt="Realstate Logo" />
-          Realstate
+        <Link 
+          to="/" 
+          onClick={(e) => {
+            if (window.location.pathname === '/') {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          className="lp-nav-brand flex items-center gap-2"
+        >
+          <img src={logoImg} className="h-16 w-auto object-contain" alt="PropAgentOS Logo" />
+          PropAgentOS
         </Link>
 
         <div className="lp-nav-links">

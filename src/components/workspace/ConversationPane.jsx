@@ -216,7 +216,7 @@ const ConversationPane = ({
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask RealState..."
+              placeholder="Ask PropAgentOS..."
               rows={1}
               style={{ maxHeight: '200px', overflowY: 'auto', resize: 'none' }}
             />
@@ -259,7 +259,7 @@ const ConversationPane = ({
           </div>
         ) : (
           <div className="ew-conv-input-hint">
-            RealState AI can make mistakes. Verify critical information.
+            PropAgentOS can make mistakes. Verify critical information.
           </div>
         )}
       </div>

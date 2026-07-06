@@ -10,7 +10,7 @@ const PrivacyPage = () => {
         <div className="container">
           <h1 style={{ fontSize: '4rem', marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Privacy Policy</h1>
           <p style={{ fontSize: '1.25rem', color: '#64748b', maxWidth: '700px', margin: '0 auto', lineHeight: 1.8 }}>
-            How RealState AI collects, uses, and protects your personal data.
+            How PropAgentOS collects, uses, and protects your personal data.
           </p>
         </div>
       </div>

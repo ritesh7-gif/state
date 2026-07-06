@@ -46,7 +46,7 @@ const plans = [
     monthlyPrice: null,
     yearlyPrice: null,
     buttonText: 'Contact Sales',
-    href: 'mailto:sales@realstate.ai',
+    href: 'mailto:sales@propagentos.ai',
     isPopular: false,
     features: [
       'Everything in Professional',

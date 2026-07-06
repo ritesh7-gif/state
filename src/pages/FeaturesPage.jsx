@@ -22,7 +22,7 @@ const FeaturesPage = () => {
         <div className="container">
           <h1 style={{ fontSize: '4rem', marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Everything you need to scale</h1>
           <p style={{ fontSize: '1.25rem', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>
-            RealState AI provides a comprehensive suite of tools powered by autonomous agents to handle your entire real estate lifecycle.
+            PropAgentOS provides a comprehensive suite of tools powered by autonomous agents to handle your entire real estate lifecycle.
           </p>
         </div>
       </div>

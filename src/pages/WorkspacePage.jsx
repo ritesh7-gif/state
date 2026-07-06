@@ -101,8 +101,8 @@ const WorkspacePage = () => {
 
   // Settings States
   const [profileName, setProfileName] = useState(() => localStorage.getItem('ew_setting_profile_name') || 'Jane Doe');
-  const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('ew_setting_profile_email') || 'jane.doe@realstate.ai');
-  const [agencyName, setAgencyName] = useState(() => localStorage.getItem('ew_setting_agency_name') || 'RealState Enterprise Group');
+  const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('ew_setting_profile_email') || 'jane.doe@propagentos.ai');
+  const [agencyName, setAgencyName] = useState(() => localStorage.getItem('ew_setting_agency_name') || 'PropAgentOS Enterprise Group');
   const [assistantLanguage, setAssistantLanguage] = useState(() => localStorage.getItem('ew_setting_assistant_language') || 'en');
   const [responseLength, setResponseLength] = useState(() => localStorage.getItem('ew_setting_response_length') || 'concise');
   const [dictationAutoSubmit, setDictationAutoSubmit] = useState(() => localStorage.getItem('ew_setting_auto_submit') === 'true');

@@ -4,18 +4,27 @@ import logoImg from '../assets/logo.png';
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-white pt-20 pb-16 px-6 sm:px-12 md:px-16 border-t border-slate-200 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto">
-        
+    <footer className="w-full bg-white transition-colors duration-200">
+      <div className="w-full h-[1px] bg-slate-200"></div>
+      <div className="max-w-7xl mx-auto pt-20 pb-16 px-6 sm:px-12 md:px-16">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 mb-16">
           
           {/* Brand Information Column */}
           <div className="md:col-span-4 flex flex-col justify-between">
             <div>
-              <Link to="/" className="flex items-center gap-3 text-slate-900 font-extrabold text-2xl tracking-wider mb-5">
-                <img src={logoImg} className="w-9 h-9 object-contain" alt="Realstate Logo" />
-                <span>Realstate</span>
+              <Link 
+                to="/" 
+                onClick={(e) => {
+                  if (window.location.pathname === '/') {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="flex items-center gap-3 text-slate-900 font-extrabold text-2xl tracking-wider mb-5"
+              >
+                <img src={logoImg} className="h-16 w-auto object-contain" alt="PropAgentOS Logo" />
+                <span>PropAgentOS</span>
               </Link>
               <p className="text-slate-700 text-sm sm:text-base leading-relaxed max-w-sm">
                 Enterprise AI workspace for modern real estate developers. Qualify leads instantly, schedule property visits, and automate customer pipelines with intelligent AI agents.
@@ -122,7 +131,7 @@ const Footer = () => {
 
         {/* Bottom copyright & policies */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-6 text-slate-600 text-sm sm:text-base pt-8 border-t border-slate-200">
-          <span>&copy; {new Date().getFullYear()} Realstate. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} PropAgentOS. All rights reserved.</span>
           <div className="flex gap-6">
             <Link to="/terms" className="text-slate-600 hover:text-slate-950 transition-colors font-medium">
               Terms and Conditions

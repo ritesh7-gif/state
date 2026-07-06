@@ -58,7 +58,7 @@ const WhyUs = () => {
   const features = [
     {
       title: "Built for Developers",
-      description: "Realstate integrates seamlessly with your custom CRM, lead capture portals, and enterprise website architectures.",
+      description: "PropAgentOS integrates seamlessly with your custom CRM, lead capture portals, and enterprise website architectures.",
       icon: <Terminal className="w-6 h-6" />,
     },
     {

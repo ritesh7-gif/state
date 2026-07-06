@@ -17,9 +17,9 @@ const SettingsView = () => {
 
   // 1. General Profile State
   const [profileName, setProfileName] = useState(() => localStorage.getItem('ew_set_profile_name') || 'Jane Doe');
-  const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('ew_set_profile_email') || 'jane.doe@realstate.ai');
+  const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('ew_set_profile_email') || 'jane.doe@propagentos.ai');
   const [profileRole, setProfileRole] = useState(() => localStorage.getItem('ew_set_profile_role') || 'Senior Sales Manager');
-  const [profileAgency, setProfileAgency] = useState(() => localStorage.getItem('ew_set_profile_agency') || 'RealState Enterprise Group');
+  const [profileAgency, setProfileAgency] = useState(() => localStorage.getItem('ew_set_profile_agency') || 'PropAgentOS Enterprise Group');
   const [profilePhone, setProfilePhone] = useState(() => localStorage.getItem('ew_set_profile_phone') || '+91 98765 43210');
   const [profileLocation, setProfileLocation] = useState(() => localStorage.getItem('ew_set_profile_location') || 'Pune, MH Office');
 
@@ -170,7 +170,7 @@ const SettingsView = () => {
                     className="ew-form-input"
                     value={profileEmail}
                     onChange={(e) => setProfileEmail(e.target.value)}
-                    placeholder="manager@realstate.ai"
+                    placeholder="manager@propagentos.ai"
                   />
                 </div>
               </div>
@@ -191,7 +191,7 @@ const SettingsView = () => {
                     className="ew-form-input"
                     value={profileAgency}
                     onChange={(e) => setProfileAgency(e.target.value)}
-                    placeholder="RealState Agency"
+                    placeholder="PropAgentOS Agency"
                   />
                 </div>
               </div>

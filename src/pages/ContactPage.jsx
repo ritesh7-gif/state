@@ -21,9 +21,9 @@ const ContactPage = () => {
             <div style={{ padding: '2.5rem', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
               <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: '#0f172a' }}>Sales & Partnerships</h2>
               <p style={{ color: '#64748b', lineHeight: 1.6, marginBottom: '2rem' }}>
-                Interested in deploying RealState AI across your organization? Let's talk about custom integrations.
+                Interested in deploying PropAgentOS across your organization? Let's talk about custom integrations.
               </p>
-              <a href="mailto:sales@realstate.ai" className="lp-btn lp-btn-primary" style={{ width: '100%' }}>sales@realstate.ai</a>
+              <a href="mailto:sales@propagentos.ai" className="lp-btn lp-btn-primary" style={{ width: '100%' }}>sales@propagentos.ai</a>
             </div>
 
             <div style={{ padding: '2.5rem', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
@@ -31,7 +31,7 @@ const ContactPage = () => {
               <p style={{ color: '#64748b', lineHeight: 1.6, marginBottom: '2rem' }}>
                 We are constantly looking for talented engineers and real estate veterans to join our mission.
               </p>
-              <a href="mailto:careers@realstate.ai" className="lp-btn lp-btn-secondary" style={{ width: '100%' }}>careers@realstate.ai</a>
+              <a href="mailto:careers@propagentos.ai" className="lp-btn lp-btn-secondary" style={{ width: '100%' }}>careers@propagentos.ai</a>
             </div>
           </div>
         </div>

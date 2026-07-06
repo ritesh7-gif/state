@@ -557,7 +557,7 @@ const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBo
           <div className="ew-premium-thinking-icon">
             <Building2 size={15} strokeWidth={2.5} />
           </div>
-          <span className="ew-premium-thinking-text">RealState AI is analyzing your request...</span>
+          <span className="ew-premium-thinking-text">PropAgentOS is analyzing your request...</span>
         </div>
       </div>
     );

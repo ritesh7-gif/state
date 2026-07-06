@@ -127,7 +127,7 @@ const PlatformPreviewMockup = () => {
     <section className="section-light" style={{ padding: '80px 2rem 140px' }}>
       <div className="container">
         <div className="lp-section-header">
-          <div className="lp-section-eyebrow">Realstate Workspace</div>
+          <div className="lp-section-eyebrow">PropAgentOS Workspace</div>
           <h2>Enterprise AI Control Room</h2>
           <p>
             Experience how our AI agents qualify leads, coordinate bookings, and optimize system workflows in real-time.
@@ -147,7 +147,7 @@ const PlatformPreviewMockup = () => {
               <div className="lp-mockup-dot" style={{ background: '#27c93f' }} />
             </div>
             <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500, letterSpacing: '0.05em' }}>
-              REALSTATE-AGENT-OS // {currentView.toUpperCase()}_VIEW
+              PROPAGENTOS-AGENT-OS // {currentView.toUpperCase()}_VIEW
             </div>
             <div style={{ width: 48 }} />
           </div>
@@ -157,7 +157,7 @@ const PlatformPreviewMockup = () => {
             <div className="lp-mockup-sidebar" style={{ gap: '0.5rem', width: '260px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em', fontSize: '1.05rem' }}>
                 <div className="glow-dot-active" style={{ width: 8, height: 8, borderRadius: '50%', background: '#0052FF' }} />
-                Realstate Studio
+                PropAgentOS Studio
               </div>
 
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em', marginBottom: '0.25rem', paddingLeft: '0.5rem' }}>ANALYZE</div>
@@ -349,7 +349,7 @@ const PlatformPreviewMockup = () => {
                             <Sparkles size={14} />
                           </div>
                           <div className="lp-mockup-chat-bubble lp-mockup-chat-ai" style={{ padding: '0.75rem 1rem', fontSize: '0.85rem' }}>
-                            Hello Marie! I'm your Realstate Booking assistant. I noticed you requested some visit info for downtown properties. How can I help you today?
+                            Hello Marie! I'm your PropAgentOS Booking assistant. I noticed you requested some visit info for downtown properties. How can I help you today?
                           </div>
                         </div>
 

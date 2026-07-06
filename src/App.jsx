@@ -10,6 +10,7 @@ import AboutPage from './pages/AboutPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import ContactPage from './pages/ContactPage';
+import FeatureDetailPage from './pages/FeatureDetailPage';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -42,6 +43,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/workspace" element={<WorkspacePage />} />
+        <Route path="/feature/:id" element={<FeatureDetailPage />} />
       </Routes>
     </Router>
   );

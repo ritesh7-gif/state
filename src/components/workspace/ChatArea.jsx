@@ -155,7 +155,7 @@ const ChatArea = ({
 
                 <div className="ws-message-content">
                   <div className="ws-message-author">
-                    {isUser ? 'You' : 'RealState AI'}
+                    {isUser ? 'You' : 'PropAgentOS'}
                   </div>
 
                   {/* Thinking Indicator */}
@@ -523,7 +523,7 @@ const ChatArea = ({
             id="ai-input"
             ref={textareaRef}
             value={input}
-            placeholder="Ask RealState..."
+            placeholder="Ask PropAgentOS..."
             className="ws-ai-textarea"
             style={{ minHeight: '36px', maxHeight: '180px' }}
             onChange={(e) => {
