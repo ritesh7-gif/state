@@ -119,7 +119,6 @@ const AnimatedChatWidget = () => {
 };
 
 const BackgroundVideo = React.memo(() => {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const videoRef = React.useRef(null);
 
   useEffect(() => {
@@ -149,7 +148,7 @@ const BackgroundVideo = React.memo(() => {
   }, []);
 
   return (
-    <div className="sierra-video-wrapper" style={{ backgroundColor: '#000' }}>
+    <div className="sierra-video-wrapper">
       <video 
         ref={videoRef}
         className="sierra-video-bg" 
@@ -159,11 +158,6 @@ const BackgroundVideo = React.memo(() => {
         playsInline
         preload="auto"
         disablePictureInPicture
-        onCanPlayThrough={() => setIsVideoLoaded(true)}
-        style={{ 
-          opacity: isVideoLoaded ? 1 : 0, 
-          transition: 'opacity 0.5s ease'
-        }}
       >
         <source src={bgVideo} type="video/mp4" />
       </video>
