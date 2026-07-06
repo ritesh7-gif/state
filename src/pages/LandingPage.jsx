@@ -11,7 +11,7 @@ import PricingSection from '../components/PricingSection';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 
-import bgVideo from '../assets/0706(1).mp4';
+import bgVideo from '../assets/0706(1) (1).mp4';
 import logoImg from '../assets/logo.png';
 import '../styles/sierra-landing.css';
 
