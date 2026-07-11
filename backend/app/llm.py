@@ -82,10 +82,11 @@ Example format:
         return json.loads(content)
     except Exception as e:
         import traceback
-        print(f"[LLM Error - get_intent_and_entities] Type: {type(e).__name__}, Message: {e}")
+        print("=" * 80)
+        print("FULL ERROR")
         traceback.print_exc()
-        # Fallback to greeting if something fails
-        return {"intent": "greeting", "entities": {}}
+        print("=" * 80)
+        raise
 
 def generate_nlu_response(prompt: str) -> str:
     """
@@ -114,9 +115,11 @@ def generate_nlu_response(prompt: str) -> str:
         return response.choices[0].message.content.strip()
     except Exception as e:
         import traceback
-        print(f"[LLM Error - generate_nlu_response] Type: {type(e).__name__}, Message: {e}")
+        print("=" * 80)
+        print("FULL ERROR")
         traceback.print_exc()
-        return f"Error: {type(e).__name__} - {e}"
+        print("=" * 80)
+        raise
 
 def generate_marketing_response(prompt: str) -> str:
     """
@@ -162,9 +165,11 @@ def generate_marketing_response(prompt: str) -> str:
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"[LLM Error - generate_marketing_response] Client: {client_name}, Model: {model_name}, Type: {type(e).__name__}, Message: {e}")
+        print("=" * 80)
+        print("FULL ERROR")
         traceback.print_exc()
-        raise e
+        print("=" * 80)
+        raise
 
 def generate_image_pollinations(prompt: str) -> str:
     """
@@ -192,7 +197,9 @@ def generate_image_pollinations(prompt: str) -> str:
         
         return url
     except Exception as e:
-        print(f"[Pollinations Image Error - generate_image_pollinations] Client: {client_name}, Model: {model_name}, Type: {type(e).__name__}, Message: {e}")
+        print("=" * 80)
+        print("FULL ERROR")
         traceback.print_exc()
-        raise e
+        print("=" * 80)
+        raise
 
