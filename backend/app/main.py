@@ -92,9 +92,10 @@ async def chat_endpoint(req: ChatRequest):
     except Exception as e:
         import traceback
         print(f"\n--- [API POST /api/chat] ERROR ---")
+        print(f"Type: {type(e).__name__}, Message: {e}")
         traceback.print_exc()
         print(f"----------------------------------\n")
-        raise HTTPException(status_code=500, detail="An internal server error occurred.")
+        raise HTTPException(status_code=500, detail=f"Error: {type(e).__name__} - {e}")
 
 @app.get("/api/properties")
 async def properties_endpoint():
