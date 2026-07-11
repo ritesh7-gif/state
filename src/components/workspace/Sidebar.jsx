@@ -178,7 +178,8 @@ const Sidebar = ({
         opacity: isExpanded ? 1 : 0, 
         pointerEvents: isExpanded ? 'auto' : 'none',
         transition: 'opacity 0.2s ease',
-        overflow: 'hidden',
+        overflowY: 'auto',
+        overflowX: 'hidden',
         whiteSpace: 'nowrap'
       }}>
         <div className="ew-sb-history-header">
