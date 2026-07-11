@@ -248,6 +248,37 @@ def marketing_agent_node(state: AgentState) -> Dict[str, Any]:
     
     db_context = f"All Properties/Projects Data: {all_props}\nCurrently Discussed Property: {prop_ctx.get('unit', 'None')} | Project: {prop_ctx.get('project', 'None')}"
     
+    msg_lower = current_msg.lower()
+    import re
+    
+    # Detect intents based on rules
+    needs_image = bool(re.search(r'\b(image|poster|creative|banner|flyer|instagram post image|social media creative|generate image|marketing creative)\b', msg_lower))
+    is_caption_only = bool(re.search(r'\b(caption|hashtags|text only|just text)\b', msg_lower)) and not needs_image
+    
+    if is_caption_only:
+        intent_instructions = """IF THE USER REQUESTS ONLY A CAPTION OR TEXT:
+DO NOT generate any image or image descriptions.
+Generate ONLY the following sections in your JSON:
+1. "Instagram Caption"
+2. "Hashtags"
+Return the minimum required content. Do NOT generate unnecessary sections."""
+    elif needs_image:
+        intent_instructions = """IF THE USER REQUESTS AN IMAGE OR CREATIVE:
+Generate ONLY the following sections in your JSON:
+1. "Instagram Caption"
+2. "Hashtags"
+Return the minimum required content. Do NOT generate unnecessary sections."""
+    else:
+        intent_instructions = """IF THE USER REQUESTS A MARKETING CAMPAIGN:
+Generate a complete marketing campaign.
+Generate ONLY the following sections in your JSON:
+1. "Campaign Strategy"
+2. "Target Audience"
+3. "Content Plan"
+4. "KPI"
+5. "Execution Timeline"
+Return the minimum required content. DO NOT generate an image unless explicitly requested."""
+
     # 1. Generate the marketing campaign
     prompt = f"""You are an elite, all-knowing Real Estate Marketing Manager.
 Your expertise covers ALL aspects of marketing, specifically tailored to residential and commercial real estate. You know everything about marketing strategy, social media, SEO, campaigns, branding, and copywriting.
@@ -256,8 +287,8 @@ Database Context: {db_context}
 
 CRITICAL INSTRUCTIONS:
 1. Act as a seasoned, highly professional Marketing Manager. Do NOT make up unprofessional things.
-2. Answer EXACTLY what the user asks. If it's a general marketing question, provide a strategic, professional answer based on real estate marketing best practices. If they ask for a specific asset (email, brochure, social media post), provide just that asset.
-3. IF THE USER REQUESTS AN IMAGE OR SOCIAL MEDIA POST: DO NOT output any "Visual Strategy", "Image Prompt", or description of the image in your text response. ONLY output exactly ONE highly engaging social media caption (with hashtags) to accompany the image. Do not output captions for multiple platforms unless specifically requested.
+2. Answer EXACTLY what the user asks.
+3. {intent_instructions}
 4. Format your response cleanly and logically. The response should always be concise, task-specific, and highly professional.
 5. Focus exclusively on real estate.
 6. If the user mentions a specific project, integrate its details. IF THE PROJECT IS NOT IN THE DATABASE CONTEXT, simply generate realistic mock data (amenities, location, price, etc.) for it. DO NOT refuse to generate content because a property is missing from the database.
@@ -270,12 +301,6 @@ CRITICAL INSTRUCTIONS:
         payload = json.loads(response_json_str)
         response_text = "Here is your requested marketing content:"
         response_type = "marketing_campaign"
-        
-        # 2. Only generate image if explicitly requested for social media or image
-        msg_lower = current_msg.lower()
-        import re
-        # Check if the user explicitly wants an image, graphic, or picture generated
-        needs_image = bool(re.search(r'\b(image|picture|photo|graphic|generate image|create image|visual)\b', msg_lower))
         
         if needs_image:
             steps.append("🖼️ Generating Pollinations AI image")
