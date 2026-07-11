@@ -113,3 +113,68 @@ def generate_nlu_response(prompt: str) -> str:
     except Exception as e:
         print(f"[LLM Error] {e}")
         return "I am experiencing temporary technical difficulties. Please try again."
+
+def generate_marketing_response(prompt: str) -> str:
+    """
+    Dedicated function for generating long-form marketing content.
+    Outputs a strict JSON string to be parsed into a MarketingCard.
+    """
+    system_instructions = (
+        "You are an elite Real Estate Marketing Manager, an expert in both residential and commercial property marketing. "
+        "You have complete knowledge of all marketing strategies, SEO, branding, social media, and campaign management. "
+        "You deliver high-impact, professional marketing copy, campaign strategies, and expert answers to any marketing questions. "
+        "You never sound like an AI chatbot. You do not use conversational filler, introductions, or generic AI phrases. "
+        "Keep the tone sophisticated, authoritative, persuasive, and strictly professional. Do not provide stupid or unprofessional advice. "
+        "You MUST output your response strictly as a JSON object, without any markdown formatting blocks like ```json. "
+        "CRITICAL: ABSOLUTELY NO ASTERISKS (*) ALLOWED. DO NOT use **bold** or *italic* formatting anywhere in your output. Use plain text formatting or ALL CAPS for emphasis if needed.\n"
+        "The JSON MUST have the following structure:\n"
+        "{\n"
+        '  "title": "A short, premium title for the deliverable, strategy, or answer",\n'
+        '  "sections": [\n'
+        '    {\n'
+        '      "heading": "e.g., Campaign Strategy, Target Audience, Expert Answer, etc.",\n'
+        '      "content": "The actual marketing content, strategic advice, or proper answer. Keep it highly professional and ready-to-use. Remember, NO ASTERISKS.",\n'
+        '      "tags": ["#CommercialRealEstate", "#MarketingStrategy"] // ONLY include tags if explicitly requested or for social media content. Empty array otherwise.\n'
+        '    }\n'
+        '  ]\n'
+        "}"
+    )
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_instructions},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.5,
+            response_format={ "type": "json_object" }
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"[LLM Error] {e}")
+        return '{"title": "Error", "sections": [{"heading": "Error Generating Campaign", "content": "I am experiencing temporary technical difficulties generating the marketing content. Please try again."}]}'
+
+def generate_image_pollinations(prompt: str) -> str:
+    """
+    Generates an image using Pollinations API.
+    """
+    try:
+        import urllib.parse
+        api_key = os.getenv("POLLINATIONS_API_KEY")
+        encoded_prompt = urllib.parse.quote(prompt)
+        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true&width=1080&height=1080"
+        if api_key:
+            url += f"&api_key={api_key}"
+        
+        # Test if the URL is accessible to handle failures as requested by requirements
+        import urllib.request
+        headers = {"User-Agent": "Mozilla/5.0"}
+        req = urllib.request.Request(url, headers=headers)
+        urllib.request.urlopen(req, timeout=10)
+        
+        return url
+    except Exception as e:
+        print(f"[Pollinations Image Error] {e}")
+        return "error"
+

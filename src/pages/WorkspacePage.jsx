@@ -342,6 +342,7 @@ const WorkspacePage = () => {
         const agentMapping = {
           'Financial Agent': 'a6',
           'Project Info Agent': 'a8',
+          'Marketing Agent': 'a9',
           'Property Search Agent': 'a7',
           'Customer Agent': 'a5',
           'Site Visit Agent': 'a3',

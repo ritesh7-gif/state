@@ -31,6 +31,7 @@ export const PROVISIONAL_AGENTS = [
   { id: 'a6', name: 'Financial Agent', desc: 'Provides financial analysis and advice' },
   { id: 'a7', name: 'Property Search Agent', desc: 'Searches inventory for matching properties' },
   { id: 'a8', name: 'Project Information Agent', desc: 'Provides detailed information on projects, amenities, and builders' },
+  { id: 'a9', name: 'Marketing Agent', desc: 'Creates AI-powered marketing content for real estate projects' },
 ];
 
 const Sidebar = ({

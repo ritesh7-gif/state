@@ -23,7 +23,7 @@ from .database import (
     get_bookings,
     get_dashboard_stats
 )
-from .llm import get_intent_and_entities, generate_nlu_response
+from .llm import get_intent_and_entities, generate_nlu_response, generate_image_pollinations, generate_marketing_response
 
 workflow = StateGraph(AgentState)
 
@@ -99,6 +99,10 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
         elif "amenities" in msg_lower or "builder" in msg_lower or "project details" in msg_lower or "project info" in msg_lower or "tell me about the project" in msg_lower:
             intent = "project_information"
 
+    if not intent:
+        if "marketing" in msg_lower or "social media" in msg_lower or "campaign" in msg_lower or "seo" in msg_lower or "hashtag" in msg_lower or "brochure" in msg_lower or "advertisement" in msg_lower or "caption" in msg_lower or "email marketing" in msg_lower or "instagram" in msg_lower or "facebook" in msg_lower or "linkedin" in msg_lower or "promotional" in msg_lower or "creative" in msg_lower:
+            intent = "marketing"
+
     # Call LLM only if intent is still unknown
     if not intent:
         if current_msg:
@@ -109,9 +113,9 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
             intent = "greeting"
 
     # Guide continuation of the booking process
-    if stage in ["CUSTOMER_INFORMATION", "PROPERTY_SELECTION"] and intent not in ["cancel", "confirm", "dashboard", "site_visit", "follow_up", "database_qa", "search_property", "greeting", "financial", "project_information"]:
+    if stage in ["CUSTOMER_INFORMATION", "PROPERTY_SELECTION"] and intent not in ["cancel", "confirm", "dashboard", "site_visit", "follow_up", "database_qa", "search_property", "greeting", "financial", "project_information", "marketing"]:
         intent = "book_property"
-    elif stage == "SITE_VISIT" and intent not in ["cancel", "confirm", "dashboard", "site_visit", "follow_up", "greeting", "database_qa", "search_property", "financial", "project_information"]:
+    elif stage == "SITE_VISIT" and intent not in ["cancel", "confirm", "dashboard", "site_visit", "follow_up", "greeting", "database_qa", "search_property", "financial", "project_information", "marketing"]:
         intent = "site_visit"
 
     print(f"[Supervisor Agent] Intent: {intent}, Entities: {entities}")
@@ -212,6 +216,12 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
             "next_agent": "project_information_agent",
             "steps": steps
         }
+    elif intent == "marketing":
+        return {
+            "conversation_stage": "MARKETING",
+            "next_agent": "marketing_agent",
+            "steps": steps
+        }
         
     # Default is booking
     return {
@@ -225,6 +235,79 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
 # =====================================================================
 # SPECIALIZED AGENTS
 # =====================================================================
+
+def marketing_agent_node(state: AgentState) -> Dict[str, Any]:
+    print("[Marketing Agent] Executing...")
+    steps = state.get("steps", [])
+    steps.extend(["🤖 Marketing Agent activated", "📝 Generating marketing content"])
+    
+    current_msg = state.get("current_message", "")
+    prop_ctx = state.get("property_context") or {}
+    
+    all_props = get_properties()
+    
+    db_context = f"All Properties/Projects Data: {all_props}\nCurrently Discussed Property: {prop_ctx.get('unit', 'None')} | Project: {prop_ctx.get('project', 'None')}"
+    
+    # 1. Generate the marketing campaign
+    prompt = f"""You are an elite, all-knowing Real Estate Marketing Manager.
+Your expertise covers ALL aspects of marketing, specifically tailored to residential and commercial real estate. You know everything about marketing strategy, social media, SEO, campaigns, branding, and copywriting.
+The user's marketing request/question: '{current_msg}'
+Database Context: {db_context}
+
+CRITICAL INSTRUCTIONS:
+1. Act as a seasoned, highly professional Marketing Manager. Do NOT make up unprofessional things.
+2. Answer EXACTLY what the user asks. If it's a general marketing question, provide a strategic, professional answer based on real estate marketing best practices. If they ask for a specific asset (email, brochure, social media post), provide just that asset.
+3. IF THE USER REQUESTS AN IMAGE OR SOCIAL MEDIA POST: DO NOT output any "Visual Strategy", "Image Prompt", or description of the image in your text response. ONLY output exactly ONE highly engaging social media caption (with hashtags) to accompany the image. Do not output captions for multiple platforms unless specifically requested.
+4. Format your response cleanly and logically. The response should always be concise, task-specific, and highly professional.
+5. Focus exclusively on real estate.
+6. If the user mentions a specific project, integrate its details. IF THE PROJECT IS NOT IN THE DATABASE CONTEXT, simply generate realistic mock data (amenities, location, price, etc.) for it. DO NOT refuse to generate content because a property is missing from the database.
+7. Do not use generic AI filler ("As an AI", "Here is your content"). Deliver the work directly and authoritatively.
+8. CRITICAL: NEVER use asterisks (*). DO NOT USE **bold** or *italic* markdown. Output plain text only."""
+    
+    response_json_str = generate_marketing_response(prompt)
+    try:
+        import json
+        payload = json.loads(response_json_str)
+        response_text = "Here is your requested marketing content:"
+        response_type = "marketing_campaign"
+        
+        # 2. Only generate image if explicitly requested for social media or image
+        msg_lower = current_msg.lower()
+        import re
+        # Check if the user explicitly wants an image, graphic, or picture generated
+        needs_image = bool(re.search(r'\b(image|picture|photo|graphic|generate image|create image|visual)\b', msg_lower))
+        
+        if needs_image:
+            steps.append("🖼️ Generating Pollinations AI image")
+            campaign_summary = payload.get("title", "") + " " + " ".join([s.get("heading", "") for s in payload.get("sections", [])])
+            img_prompt = generate_nlu_response(f"Create a highly detailed prompt for an AI image generator to generate a premium REAL ESTATE marketing image for this campaign: {campaign_summary}. CRITICAL REQUIREMENT: The image MUST be of real estate (e.g., luxury apartment towers, modern architecture, premium interiors, landscaped gardens). DO NOT generate images of people, logos, random objects, or anything unrelated to real estate property. Requirements: Ultra-realistic, golden hour lighting, cinematic perspective, 4K quality, no text, no watermark. Provide ONLY the prompt text, no intro, no conversational filler.")
+            
+            # 3. Send prompt to Pollinations API
+            url = generate_image_pollinations(img_prompt)
+            
+            if url == "error":
+                response_text += "\n\n*Image generation is currently unavailable.*"
+            else:
+                payload["image_url"] = url
+            
+    except Exception as e:
+        print(f"[Marketing JSON Parse Error] {e}")
+        response_text = response_json_str
+        response_type = "text"
+        payload = None
+        
+    steps.append("✅ Ready")
+    
+    return {
+        "conversation_stage": "MARKETING",
+        "response_text": response_text,
+        "response_type": response_type,
+        "response_payload": payload,
+        "response_actions": [],
+        "response_agent_name": "Marketing Agent",
+        "next_agent": END,
+        "steps": steps
+    }
 
 def financial_agent_node(state: AgentState) -> Dict[str, Any]:
     print("[Financial Agent] Executing...")
@@ -1030,12 +1113,23 @@ def booking_creation_agent_node(state: AgentState) -> Dict[str, Any]:
     cust_ctx = state.get("customer_context") or {}
     book_ctx = state.get("booking_context") or {}
     
+    action_payload = state.get("action_payload") or {}
+    if action == "confirm_booking" and action_payload:
+        cust_ctx["name"] = action_payload.get("customer_name") or action_payload.get("customerName") or cust_ctx.get("name", "Unknown")
+        book_ctx["amount"] = action_payload.get("token_amount") or action_payload.get("amount") or book_ctx.get("amount", "₹2,00,000")
+        prop_ctx["unit"] = action_payload.get("unit") or action_payload.get("property_unit") or prop_ctx.get("unit", "Unknown")
+        prop_ctx["project"] = action_payload.get("project") or action_payload.get("project_name") or prop_ctx.get("project", "Unknown")
+    
     booking_id = f"BK-2026-{random.randint(100000, 999999)}"
     
+    c_name = cust_ctx.get("name", "Unknown")
+    c_email = cust_ctx.get("email") or f"{c_name.lower().replace(' ', '')}@example.com"
+    c_phone = cust_ctx.get("phone", "N/A")
+    
     add_customer({
-        "name": cust_ctx["name"],
-        "email": cust_ctx.get("email") or f"{cust_ctx['name'].lower().replace(' ', '')}@example.com",
-        "phone": cust_ctx["phone"],
+        "name": c_name,
+        "email": c_email,
+        "phone": c_phone,
         "status": "Active",
         "assignedAgent": "Booking Agent",
         "dateAdded": datetime.now().strftime("%b %d, %Y")
@@ -1043,7 +1137,7 @@ def booking_creation_agent_node(state: AgentState) -> Dict[str, Any]:
     
     add_booking({
         "id": booking_id,
-        "customerName": cust_ctx.get("name"),
+        "customerName": c_name,
         "unit": prop_ctx.get("unit"),
         "amount": book_ctx.get("amount") or "₹2,00,000",
         "status": "Confirmed",
@@ -1100,6 +1194,7 @@ workflow.add_node("dashboard_agent", dashboard_agent_node)
 workflow.add_node("database_qa_agent", database_qa_agent_node)
 workflow.add_node("financial_agent", financial_agent_node)
 workflow.add_node("project_information_agent", project_information_agent_node)
+workflow.add_node("marketing_agent", marketing_agent_node)
 
 workflow.add_node("property_validation_agent", property_validation_agent_node)
 workflow.add_node("missing_info_agent", missing_info_agent_node)
@@ -1120,6 +1215,7 @@ workflow.add_conditional_edges(
         "database_qa_agent": "database_qa_agent",
         "financial_agent": "financial_agent",
         "project_information_agent": "project_information_agent",
+        "marketing_agent": "marketing_agent",
         "property_validation_agent": "property_validation_agent",
         "booking_creation_agent": "booking_creation_agent",
         END: END
@@ -1139,6 +1235,7 @@ workflow.add_edge("dashboard_agent", END)
 workflow.add_edge("database_qa_agent", END)
 workflow.add_edge("financial_agent", END)
 workflow.add_edge("project_information_agent", END)
+workflow.add_edge("marketing_agent", END)
 workflow.add_edge("booking_review_agent", END)
 workflow.add_edge("booking_creation_agent", END)
 

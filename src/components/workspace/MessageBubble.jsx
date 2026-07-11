@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import PropertyCard from './PropertyCard';
 import BookingCard from './BookingCard';
+import MarketingCard from './MarketingCard';
 
 /* Formats plain text into JSX — handles newlines + bullet points + basic Markdown bold/code tags */
 const formatText = (text) => {
@@ -27,9 +28,17 @@ const formatText = (text) => {
     const t = line.trim();
     if (!t) return <div key={i} style={{ height: 8 }} />;
     
-    // Check if line is a list item
+    // Check if line is a header or list item
+    const isH3 = t.startsWith('### ');
+    const isH2 = t.startsWith('## ');
+    const isH1 = t.startsWith('# ');
     const isBullet = t.startsWith('* ') || t.startsWith('• ') || t.startsWith('- ');
-    const rawLine = isBullet ? t.slice(2) : t;
+    
+    let rawLine = t;
+    if (isH3) rawLine = t.slice(4);
+    else if (isH2) rawLine = t.slice(3);
+    else if (isH1) rawLine = t.slice(2);
+    else if (isBullet) rawLine = t.slice(2);
     
     // Parse bold tags **text** and inline code `code`
     const regex = /(\*\*.*?\*\*|`.*?`)/g;
@@ -57,6 +66,23 @@ const formatText = (text) => {
       return part;
     });
 
+    if (isH1 || isH2 || isH3) {
+      const fontSize = isH1 ? '16px' : (isH2 ? '15px' : '14px');
+      return (
+        <div key={i} style={{ 
+          color: 'var(--text-primary)', 
+          fontWeight: 700, 
+          fontSize: fontSize, 
+          marginTop: i === 0 ? '4px' : '16px', 
+          marginBottom: '8px',
+          borderBottom: isH1 ? '1px solid var(--border)' : 'none',
+          paddingBottom: isH1 ? '4px' : '0'
+        }}>
+          {formattedLine}
+        </div>
+      );
+    }
+
     if (isBullet) {
       return (
         <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', margin: '3px 0' }}>
@@ -66,7 +92,7 @@ const formatText = (text) => {
       );
     }
     
-    return <div key={i} style={{ color: 'var(--text-primary)', margin: '2px 0' }}>{formattedLine}</div>;
+    return <div key={i} style={{ color: 'var(--text-primary)', margin: '4px 0', lineHeight: '1.5' }}>{formattedLine}</div>;
   });
 };
 
@@ -674,6 +700,12 @@ const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBo
                 <div className="ew-msg-ai-text">{formatText(text)}</div>
               )}
 
+              {type === 'image' && payload && (
+                <div className="ew-image-container" style={{ marginTop: 16, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                  <img src={payload} alt="Generated marketing content" style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
+                </div>
+              )}
+
               {/* Cards payload rendering */}
               {(type === 'properties' || type === 'properties_with_form') && Array.isArray(payload) && payload.length > 0 && (
                 <div className="ew-property-cards">
@@ -709,6 +741,10 @@ const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBo
                   onConfirm={onConfirmBooking}
                   onCancel={onCancelBooking}
                 />
+              )}
+
+              {type === 'marketing_campaign' && payload && (
+                <MarketingCard payload={payload} onAction={onQuickAction} />
               )}
 
               {type === 'booking_complete' && payload && (

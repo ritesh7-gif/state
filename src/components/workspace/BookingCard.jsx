@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
-import { FileText, CheckCircle, X, User, Building2 } from 'lucide-react';
+import { FileText, CheckCircle, X, User, Building2, Edit2, Save } from 'lucide-react';
 
 const BookingCard = ({ payload, onConfirm, onCancel }) => {
   const [clicked, setClicked] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Track editable fields locally
+  const [editData, setEditData] = useState({
+    customer_name: payload?.customer_name || payload?.customerName || '',
+    token_amount: payload?.token_amount || payload?.amount || ''
+  });
 
   if (!payload) return null;
 
   const {
-    customer_name,
-    customerName,
     property_unit,
     unit,
     project_name,
     project,
     price,
-    token_amount,
-    amount,
     booking_id,
     id,
     status
   } = payload;
 
-  const c_name = customer_name || customerName;
   const p_unit = property_unit || unit;
   const p_name = project_name || project;
-  const p_amount = token_amount || amount;
   const b_id = booking_id || id;
 
   if (status === 'confirmed' || status === 'CONFIRMED') {
@@ -71,33 +72,40 @@ const BookingCard = ({ payload, onConfirm, onCancel }) => {
   }
 
   const rows = [
-    { label: 'Customer',        value: c_name },
-    { label: 'Property',        value: p_unit ? `Unit ${p_unit}` : null },
-    { label: 'Project',         value: p_name },
-    { label: 'Price',           value: price, price: true },
-    { label: 'Booking Amount',  value: p_amount, price: true },
+    { label: 'Customer', value: editData.customer_name, field: 'customer_name' },
+    { label: 'Property', value: p_unit ? `Unit ${p_unit}` : null },
+    { label: 'Project', value: p_name },
+    { label: 'Price', value: price, price: true },
+    { label: 'Booking Amount', value: editData.token_amount, price: true, field: 'token_amount' },
     { label: 'Sales Executive', value: 'Rahul Mehta' },
-    { label: 'Date & Time',     value: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) },
-    { label: 'Status',          value: status || 'Ready for Confirmation' },
-  ].filter(r => r.value);
+    { label: 'Date & Time', value: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) },
+    { label: 'Status', value: status || 'Ready for Confirmation' },
+  ].filter(r => r.value !== null && r.value !== undefined);
+
+  const handleEditChange = (field, val) => {
+    setEditData(prev => ({ ...prev, [field]: val }));
+  };
 
   const handleConfirm = () => {
     setClicked(true);
     if (onConfirm) {
-      onConfirm(payload);
+      onConfirm({
+        ...payload,
+        customer_name: editData.customer_name,
+        customerName: editData.customer_name,
+        token_amount: editData.token_amount,
+        amount: editData.token_amount
+      });
     }
   };
 
   const handleCancel = () => {
     setClicked(true);
-    if (onCancel) {
-      onCancel();
-    }
+    if (onCancel) onCancel();
   };
 
   return (
     <div className="ew-booking-review-card">
-      {/* Header */}
       <div className="ew-booking-review-header">
         <div className="ew-booking-review-icon">
           <FileText size={16} strokeWidth={2} />
@@ -108,40 +116,71 @@ const BookingCard = ({ payload, onConfirm, onCancel }) => {
         </div>
       </div>
 
-      {/* Rows */}
       <div className="ew-booking-review-body">
-        {rows.map(({ label, value, price: isPrice }) => (
+        {rows.map(({ label, value, price: isPrice, field }) => (
           <div key={label} className="ew-booking-review-row">
             <span className="ew-booking-review-row-label">{label}</span>
-            <span className={`ew-booking-review-row-value${isPrice ? ' price' : ''}`}>
-              {value}
-            </span>
+            {isEditing && field ? (
+              <input
+                type={field === 'token_amount' ? 'number' : 'text'}
+                value={value}
+                onChange={(e) => handleEditChange(field, e.target.value)}
+                style={{
+                  background: 'var(--surface-100)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '6px',
+                  padding: '6px 12px',
+                  fontSize: '14px',
+                  width: '65%',
+                  minWidth: '220px',
+                  textAlign: 'right',
+                  fontFamily: 'inherit'
+                }}
+              />
+            ) : (
+              <span className={`ew-booking-review-row-value${isPrice ? ' price' : ''}`}>
+                {value}
+              </span>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Actions */}
       <div className="ew-booking-review-actions">
-        <button
-          id="booking-confirm-btn"
-          className="ew-btn ew-btn-primary ew-btn-sm"
-          onClick={handleConfirm}
-          disabled={clicked}
-          style={{ flex: 1 }}
-        >
-          <CheckCircle size={13} strokeWidth={2.5} />
-          Confirm Booking
-        </button>
-        <button
-          id="booking-cancel-btn"
-          className="ew-btn ew-btn-secondary ew-btn-sm"
-          onClick={handleCancel}
-          disabled={clicked}
-          style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-          <X size={13} strokeWidth={2.5} style={{ display: 'none' }} />
-          Edit Details
-        </button>
+        {isEditing ? (
+          <button
+            className="ew-btn ew-btn-primary ew-btn-sm"
+            onClick={() => setIsEditing(false)}
+            style={{ flex: 1 }}
+          >
+            <Save size={13} strokeWidth={2.5} />
+            Save Details
+          </button>
+        ) : (
+          <>
+            <button
+              id="booking-confirm-btn"
+              className="ew-btn ew-btn-primary ew-btn-sm"
+              onClick={handleConfirm}
+              disabled={clicked}
+              style={{ flex: 1 }}
+            >
+              <CheckCircle size={13} strokeWidth={2.5} />
+              Confirm Booking
+            </button>
+            <button
+              id="booking-edit-btn"
+              className="ew-btn ew-btn-secondary ew-btn-sm"
+              onClick={() => setIsEditing(true)}
+              disabled={clicked}
+              style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              <Edit2 size={13} strokeWidth={2.5} />
+              Edit Details
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
