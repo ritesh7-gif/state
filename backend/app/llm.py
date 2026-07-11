@@ -1,64 +1,37 @@
 import os
 import json
-import logging
 import sys
 import traceback
-import httpx
 import openai
 from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configure logger for this module
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-
 _openai_client = None
 
 def get_openai_client() -> OpenAI:
-    """
-    Lazy initialization of the OpenAI client to ensure environment variables
-    are loaded, and to configure proper timeouts and HTTP settings for environments like Railway.
-    """
     global _openai_client
     if _openai_client is not None:
         return _openai_client
 
-    api_key = os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-    http_proxy = os.getenv("HTTP_PROXY") or os.getenv("http_proxy")
-    https_proxy = os.getenv("HTTPS_PROXY") or os.getenv("https_proxy")
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
 
-    logger.debug("--- OpenAI Client Initialization Audit ---")
-    logger.debug(f"OpenAI SDK Version: {getattr(openai, '__version__', 'unknown')}")
-    logger.debug(f"Python Version: {sys.version}")
-    logger.debug(f"API Key Detected: {bool(api_key)}")
-    logger.debug(f"Base URL: {base_url}")
-    logger.debug(f"HTTP Proxy: {http_proxy}, HTTPS Proxy: {https_proxy}")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is missing")
 
-    # Configure custom HTTP client with extended timeouts
-    # Railway sometimes drops idle connections or has slow DNS/IPv6 routing.
-    custom_http_client = httpx.Client(
-        proxy=https_proxy or http_proxy,
-        timeout=httpx.Timeout(60.0, connect=15.0, read=60.0, write=15.0, pool=60.0),
-        limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
-    )
+    print("OpenAI SDK:", openai.__version__)
+    print("Python:", sys.version)
+    print("OPENAI_API_KEY exists:", bool(api_key))
+    print("Key length:", len(api_key))
+    print("Last characters:", repr(api_key[-10:]))
 
     _openai_client = OpenAI(
         api_key=api_key,
-        base_url=base_url,
-        http_client=custom_http_client,
-        max_retries=3
+        timeout=60.0,
+        max_retries=2,
     )
     
-    logger.debug("OpenAI client initialized successfully.")
     return _openai_client
 
 def get_intent_and_entities(user_input: str, conversation_stage: str) -> dict:
@@ -124,6 +97,7 @@ Example format:
 """
     try:
         client = get_openai_client()
+        print(f"Model: gpt-4o-mini, API Key exists: {bool(client.api_key)}, Base URL: {client.base_url}, SDK: {openai.__version__}")
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -135,14 +109,8 @@ Example format:
         )
         content = response.choices[0].message.content
         return json.loads(content)
-    except Exception as e:
-        logger.error("=" * 80)
-        logger.error(f"OpenAI API Connection Error in get_intent_and_entities")
-        logger.error(f"Exception Type: {type(e).__name__}")
-        logger.error(f"Exception Message: {str(e)}")
-        logger.error("FULL TRACEBACK:")
-        logger.error(traceback.format_exc())
-        logger.error("=" * 80)
+    except Exception:
+        traceback.print_exc()
         raise
 
 def generate_nlu_response(prompt: str) -> str:
@@ -152,6 +120,7 @@ def generate_nlu_response(prompt: str) -> str:
     """
     try:
         client = get_openai_client()
+        print(f"Model: gpt-4o-mini, API Key exists: {bool(client.api_key)}, Base URL: {client.base_url}, SDK: {openai.__version__}")
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -171,14 +140,8 @@ def generate_nlu_response(prompt: str) -> str:
             temperature=0.3
         )
         return response.choices[0].message.content.strip()
-    except Exception as e:
-        logger.error("=" * 80)
-        logger.error(f"OpenAI API Connection Error in generate_nlu_response")
-        logger.error(f"Exception Type: {type(e).__name__}")
-        logger.error(f"Exception Message: {str(e)}")
-        logger.error("FULL TRACEBACK:")
-        logger.error(traceback.format_exc())
-        logger.error("=" * 80)
+    except Exception:
+        traceback.print_exc()
         raise
 
 def generate_marketing_response(prompt: str) -> str:
@@ -215,6 +178,7 @@ def generate_marketing_response(prompt: str) -> str:
 
     try:
         openai_client = get_openai_client()
+        print(f"Model: {model_name}, API Key exists: {bool(openai_client.api_key)}, Base URL: {openai_client.base_url}, SDK: {openai.__version__}")
         response = openai_client.chat.completions.create(
             model=model_name,
             messages=[
@@ -225,14 +189,8 @@ def generate_marketing_response(prompt: str) -> str:
             response_format={ "type": "json_object" }
         )
         return response.choices[0].message.content.strip()
-    except Exception as e:
-        logger.error("=" * 80)
-        logger.error(f"OpenAI API Connection Error in generate_marketing_response")
-        logger.error(f"Exception Type: {type(e).__name__}")
-        logger.error(f"Exception Message: {str(e)}")
-        logger.error("FULL TRACEBACK:")
-        logger.error(traceback.format_exc())
-        logger.error("=" * 80)
+    except Exception:
+        traceback.print_exc()
         raise
 
 def generate_image_pollinations(prompt: str) -> str:
