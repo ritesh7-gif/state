@@ -140,9 +140,15 @@ def generate_marketing_response(prompt: str) -> str:
         "}"
     )
     
+    import traceback
+    client_name = "OpenAI"
+    model_name = "gpt-4o"
+    has_key = bool(os.getenv("OPENAI_API_KEY"))
+    print(f"[API Call] Client: {client_name}, Model: {model_name}, API Key Exists: {has_key}")
+
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=model_name,
             messages=[
                 {"role": "system", "content": system_instructions},
                 {"role": "user", "content": prompt}
@@ -152,16 +158,23 @@ def generate_marketing_response(prompt: str) -> str:
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"[LLM Error] {e}")
-        return '{"title": "Error", "sections": [{"heading": "Error Generating Campaign", "content": "I am experiencing temporary technical difficulties generating the marketing content. Please try again."}]}'
+        print(f"[LLM Error] Client: {client_name}, Model: {model_name}, Error: {e}")
+        traceback.print_exc()
+        raise e
 
 def generate_image_pollinations(prompt: str) -> str:
     """
     Generates an image using Pollinations API.
     """
+    import traceback
+    client_name = "Pollinations AI"
+    model_name = "image.pollinations.ai"
+    api_key = os.getenv("POLLINATIONS_API_KEY")
+    has_key = bool(api_key)
+    print(f"[API Call] Client: {client_name}, Model: {model_name}, API Key Exists: {has_key}")
+
     try:
         import urllib.parse
-        api_key = os.getenv("POLLINATIONS_API_KEY")
         encoded_prompt = urllib.parse.quote(prompt)
         url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true&width=1080&height=1080"
         if api_key:
@@ -175,6 +188,7 @@ def generate_image_pollinations(prompt: str) -> str:
         
         return url
     except Exception as e:
-        print(f"[Pollinations Image Error] {e}")
-        return "error"
+        print(f"[Pollinations Image Error] Client: {client_name}, Model: {model_name}, Error: {e}")
+        traceback.print_exc()
+        raise e
 

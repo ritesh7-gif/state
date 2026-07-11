@@ -264,9 +264,9 @@ CRITICAL INSTRUCTIONS:
 7. Do not use generic AI filler ("As an AI", "Here is your content"). Deliver the work directly and authoritatively.
 8. CRITICAL: NEVER use asterisks (*). DO NOT USE **bold** or *italic* markdown. Output plain text only."""
     
-    response_json_str = generate_marketing_response(prompt)
     try:
         import json
+        response_json_str = generate_marketing_response(prompt)
         payload = json.loads(response_json_str)
         response_text = "Here is your requested marketing content:"
         response_type = "marketing_campaign"
@@ -283,16 +283,18 @@ CRITICAL INSTRUCTIONS:
             img_prompt = generate_nlu_response(f"Create a highly detailed prompt for an AI image generator to generate a premium REAL ESTATE marketing image for this campaign: {campaign_summary}. CRITICAL REQUIREMENT: The image MUST be of real estate (e.g., luxury apartment towers, modern architecture, premium interiors, landscaped gardens). DO NOT generate images of people, logos, random objects, or anything unrelated to real estate property. Requirements: Ultra-realistic, golden hour lighting, cinematic perspective, 4K quality, no text, no watermark. Provide ONLY the prompt text, no intro, no conversational filler.")
             
             # 3. Send prompt to Pollinations API
-            url = generate_image_pollinations(img_prompt)
-            
-            if url == "error":
-                response_text += "\n\n*Image generation is currently unavailable.*"
-            else:
+            try:
+                url = generate_image_pollinations(img_prompt)
                 payload["image_url"] = url
+            except Exception as img_err:
+                print(f"[Marketing Agent] Image generation failed: {img_err}")
+                response_text += "\n\n*Image generation is currently unavailable.*"
             
     except Exception as e:
-        print(f"[Marketing JSON Parse Error] {e}")
-        response_text = response_json_str
+        print(f"[Marketing Agent Error] {e}")
+        import traceback
+        traceback.print_exc()
+        response_text = f"An error occurred: {str(e)}"
         response_type = "text"
         payload = None
         
