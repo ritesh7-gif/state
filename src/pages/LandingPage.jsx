@@ -22,11 +22,11 @@ const AnimatedChatWidget = () => {
   const [visibleMessages, setVisibleMessages] = useState([]);
 
   const chatSequence = [
-    { id: 1, type: 'agent', text: 'Hi there! I am your PropAgentOS. How can I help you today?' },
-    { id: 2, type: 'user', text: 'I am looking for a 3-bedroom property with a pool under $2M.' },
-    { id: 3, type: 'agent', text: 'I found 5 matching properties. I have also pre-qualified your profile for them.' },
-    { id: 4, type: 'user', text: 'Perfect. Can you schedule visits for the top 3 this weekend?' },
-    { id: 5, type: 'agent', text: 'Done! I have booked the viewings and added the itinerary to your calendar.' },
+    { id: 1, type: 'agent', text: 'PropAgentOS Super Agent online. Here is your daily summary: 12 New Leads, 4 Site Visits, 2 Bookings.' },
+    { id: 2, type: 'user', text: 'Show pending customer payments for this month.' },
+    { id: 3, type: 'agent', text: 'You have 5 pending payments totaling $120k. Should I send automated reminders?' },
+    { id: 4, type: 'user', text: 'Yes, send reminders. Also, schedule a site visit for Rahul tomorrow.' },
+    { id: 5, type: 'agent', text: 'Reminders sent. Site visit for Rahul scheduled at Tower A. Sales executive assigned.' },
   ];
 
   useEffect(() => {
@@ -274,10 +274,13 @@ const LandingPage = () => {
           <main className="sierra-hero">
             <div className="sierra-hero-text">
               <h1>
-                Intelligent AI Agents.<br />
-                Built for Modern<br />
-                Real Estate.
+                The AI Operating System.<br />
+                Built for Real Estate<br />
+                Developers.
               </h1>
+              <p style={{ color: 'white', maxWidth: '600px', margin: '1rem auto 2rem', fontSize: '1.2rem', lineHeight: '1.6' }}>
+                PropAgentOS unifies bookings, leads, inventory, marketing, finance, CRM, and customer engagement into one intelligent workspace.
+              </p>
               <Link to="/features" className="sierra-hero-btn">
                 Learn more
               </Link>

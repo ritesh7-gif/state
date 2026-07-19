@@ -428,6 +428,21 @@ const WorkspacePage = () => {
     callChatApi(newText);
   };
 
+  // ---- Regenerate message ----
+  const handleRegenerate = () => {
+    const lastUserMsg = [...messages].reverse().find(m => m.sender === 'user');
+    if (lastUserMsg) {
+      setMessages(prev => {
+        const lastMsg = prev[prev.length - 1];
+        if (lastMsg && lastMsg.sender === 'ai') {
+          return [...prev.slice(0, -1), { id: 'msg-thinking-' + Date.now(), sender: 'ai', isThinking: true }];
+        }
+        return [...prev, { id: 'msg-thinking-' + Date.now(), sender: 'ai', isThinking: true }];
+      });
+      callChatApi(lastUserMsg.text);
+    }
+  };
+
   // ---- Select property ----
   const handleSelectProperty = (prop) => {
     setMessages(prev => prev.map(msg => {
@@ -613,6 +628,7 @@ const WorkspacePage = () => {
         handleSend={handleSend}
         onQuickAction={handleQuickAction}
         onEditMessage={handleEditMessage}
+        onRegenerate={handleRegenerate}
         onSelectProperty={handleSelectProperty}
         onConfirmBooking={handleConfirmBooking}
         onCancelBooking={handleCancelBooking}

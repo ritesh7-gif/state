@@ -8,13 +8,13 @@ const Hero = () => {
       <div className="container">
         <div className="lp-hero-content">
           <div className="lp-hero-badge animate-fade-up">
-            RealEstate AI Platform 2.0
+            PropAgentOS for Real Estate Developers
           </div>
           <h1 className="animate-fade-up delay-100">
-            AI Agents Built for Modern <br/><span>Real Estate Sales Teams</span>
+            The AI Operating System for<br/><span>Real Estate Developers</span>
           </h1>
           <p className="animate-fade-up delay-200">
-            Automate property bookings, customer management, site visits, CRM workflows and sales operations using intelligent AI agents.
+            PropAgentOS unifies bookings, leads, inventory, marketing, finance, CRM, and customer engagement into one intelligent workspace.
           </p>
           <div className="lp-hero-actions animate-fade-up delay-300">
             <Link to="/login" className="lp-btn lp-btn-primary">
@@ -50,16 +50,19 @@ const Hero = () => {
                 </div>
               </div>
               <div className="lp-mockup-body">
+                <div className="lp-mockup-chat-bubble lp-mockup-chat-user" style={{ background: '#2563eb' }}>
+                  Show today's sales summary.
+                </div>
                 <div className="lp-mockup-chat-bubble lp-mockup-chat-ai">
-                  <strong>Booking Agent</strong>
-                  <p style={{ marginTop: '0.25rem' }}>I've identified 3 properties matching the client's criteria. Should I schedule site visits for this weekend?</p>
+                  <strong>Super Agent</strong>
+                  <p style={{ marginTop: '0.25rem' }}>You have 12 new leads, 4 site visits, and 2 bookings. Total revenue today: $450k.</p>
                 </div>
                 <div className="lp-mockup-chat-bubble lp-mockup-chat-user" style={{ background: '#2563eb' }}>
-                  Yes, please schedule them for Saturday morning.
+                  Schedule a site visit for Rahul tomorrow.
                 </div>
                 <div className="lp-mockup-chat-bubble lp-mockup-chat-ai">
-                  <strong>Booking Agent</strong>
-                  <p style={{ marginTop: '0.25rem' }}>Done. Invitations sent to the client and calendars have been updated. The properties are confirmed.</p>
+                  <strong>Site Visit Agent</strong>
+                  <p style={{ marginTop: '0.25rem' }}>Site visit scheduled for Rahul at Tower A. Sales executive assigned.</p>
                 </div>
               </div>
             </div>

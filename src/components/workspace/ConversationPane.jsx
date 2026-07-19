@@ -3,10 +3,10 @@ import { ArrowUp, BookOpen, Search, Users, LayoutDashboard, ThumbsUp, ThumbsDown
 import MessageBubble from './MessageBubble';
 
 const SUGGESTIONS = [
-  { id: 'book',     label: 'Book a property',   icon: BookOpen,        action: 'book'     },
-  { id: 'search',   label: 'Search inventory',  icon: Search,          action: 'search'   },
-  { id: 'customer', label: 'Find customer',      icon: Users,           action: 'customer' },
-  { id: 'history',  label: 'Booking history',   icon: LayoutDashboard, action: 'history'  },
+  { id: 'summary',     label: 'Show sales summary',   icon: LayoutDashboard,        action: 'sales_summary'     },
+  { id: 'site_visit',   label: 'Schedule site visit',  icon: Users,          action: 'schedule_visit'   },
+  { id: 'book_unit', label: 'Book Flat A-1203',      icon: BookOpen,           action: 'book_flat' },
+  { id: 'campaign',  label: 'Gen. Instagram campaign',   icon: Search, action: 'gen_campaign'  },
 ];
 
 const EmptyState = ({ onChip }) => (
@@ -34,6 +34,7 @@ const ConversationPane = ({
   handleSend,
   onQuickAction,
   onEditMessage,
+  onRegenerate,
   onSelectProperty,
   onConfirmBooking,
   onCancelBooking,
@@ -189,6 +190,7 @@ const ConversationPane = ({
                 onCancelBooking={onCancelBooking}
                 onQuickAction={onQuickAction}
                 onEditMessage={onEditMessage}
+                onRegenerate={onRegenerate}
                 onViewDetails={onViewDetails}
                 onAnimationComplete={scrollToBottom}
               />

@@ -28,9 +28,9 @@ const PlatformPreviewMockup = () => {
   const manualTimerRef = useRef(null);
 
   // Queries for the search bar
-  const query1 = "Analyze lead activity and booking channels for this week.";
-  const query2 = "Open recent high-intent lead profile and booking history.";
-  const query3 = "Execute property matching and schedule tour for Marie Dubois.";
+  const query1 = "Show today's sales summary across all projects.";
+  const query2 = "Show pending customer payments and send reminders.";
+  const query3 = "Generate Instagram campaign for Sky Heights new phase.";
 
   // Auto-cycle animation state machine
   useEffect(() => {
@@ -349,7 +349,7 @@ const PlatformPreviewMockup = () => {
                             <Sparkles size={14} />
                           </div>
                           <div className="lp-mockup-chat-bubble lp-mockup-chat-ai" style={{ padding: '0.75rem 1rem', fontSize: '0.85rem' }}>
-                            Hello Marie! I'm your PropAgentOS Booking assistant. I noticed you requested some visit info for downtown properties. How can I help you today?
+                            Hello! I am your PropAgentOS Super Agent. How can I assist you with your leads today?
                           </div>
                         </div>
 
@@ -363,7 +363,7 @@ const PlatformPreviewMockup = () => {
                         )}
                         {showChatUserBubble && (
                           <div className="lp-mockup-chat-bubble lp-mockup-chat-user" style={{ padding: '0.75rem 1rem', fontSize: '0.85rem', alignSelf: 'flex-end', background: '#0052FF', animation: 'fadeUp 0.3s ease-out' }}>
-                            I need to schedule a property visit for this weekend.
+                            Schedule a site visit for Marie Dubois this weekend.
                           </div>
                         )}
 
@@ -386,7 +386,7 @@ const PlatformPreviewMockup = () => {
                               <Sparkles size={14} />
                             </div>
                             <div className="lp-mockup-chat-bubble lp-mockup-chat-ai" style={{ padding: '0.75rem 1rem', fontSize: '0.85rem' }}>
-                              I found 3 matching properties in downtown. Scheduling for Saturday morning at 10:00 AM. I have synced your profile calendar.
+                              Scheduling a site visit for Marie Dubois on Saturday at 10:00 AM. I have assigned a sales executive and notified them.
                             </div>
                           </div>
                         )}

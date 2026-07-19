@@ -20,6 +20,8 @@ import {
 import PropertyCard from './PropertyCard';
 import BookingCard from './BookingCard';
 import MarketingCard from './MarketingCard';
+import WorkflowExecutionCard from './WorkflowExecutionCard';
+import BusinessSummaryCard from './BusinessSummaryCard';
 
 /* Formats plain text into JSX — handles newlines + bullet points + basic Markdown bold/code tags */
 const formatText = (text) => {
@@ -96,7 +98,9 @@ const formatText = (text) => {
   });
 };
 
-const ReactionBar = () => (
+const ReactionBar = ({ onRegenerate, text }) => {
+  const [isCopied, setIsCopied] = useState(false);
+  return (
   <div className="ew-msg-reactions">
     <button className="ew-msg-reaction-btn" title="Good response">
       <ThumbsUp size={14} strokeWidth={1.75} />
@@ -104,14 +108,22 @@ const ReactionBar = () => (
     <button className="ew-msg-reaction-btn" title="Bad response">
       <ThumbsDown size={14} strokeWidth={1.75} />
     </button>
-    <button className="ew-msg-reaction-btn" title="Regenerate">
+    <button className="ew-msg-reaction-btn" title="Regenerate" onClick={onRegenerate}>
       <RotateCcw size={14} strokeWidth={1.75} />
     </button>
-    <button className="ew-msg-reaction-btn" title="Copy">
-      <Copy size={14} strokeWidth={1.75} />
+    <button className="ew-msg-reaction-btn" title="Copy" onClick={() => {
+      if (text) {
+        navigator.clipboard.writeText(text).then(() => {
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+        }).catch(err => console.error('Copy failed', err));
+      }
+    }}>
+      {isCopied ? <CheckCircle size={14} color="#10B981" /> : <Copy size={14} strokeWidth={1.75} />}
     </button>
   </div>
-);
+  );
+};
 
 /* =====================================================================
    CUSTOM PREMIUM CARDS
@@ -316,6 +328,86 @@ const BookingsListCard = ({ bookings }) => {
         </table>
       </div>
     </div>
+  );
+};
+
+const PropertySearchFormCard = ({ onSubmit }) => {
+  const [project, setProject] = useState('');
+  const [unit, setUnit] = useState('');
+  const [location, setLocation] = useState('');
+  const [budget, setBudget] = useState('');
+  const [bhk, setBhk] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const criteria = [];
+    if (project) criteria.push(`Project: ${project}`);
+    if (unit) criteria.push(`Unit: ${unit}`);
+    if (location) criteria.push(`Location: ${location}`);
+    if (budget) criteria.push(`Budget: ${budget}`);
+    if (bhk) criteria.push(`BHK: ${bhk}`);
+
+    if (criteria.length === 0) return;
+
+    setSubmitted(true);
+    onSubmit(criteria.join(', '));
+  };
+
+  if (submitted) {
+    return (
+      <div className="ew-customer-form-card" style={{ padding: '24px 20px', alignItems: 'center', textAlign: 'center' }}>
+        <div style={{
+          width: '36px',
+          height: '36px',
+          borderRadius: '50%',
+          background: 'rgba(34, 197, 94, 0.15)',
+          color: '#4ade80',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '10px'
+        }}>
+          <CheckCircle size={20} strokeWidth={2.5} />
+        </div>
+        <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)' }}>Booking Details Submitted</div>
+        <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Searching properties based on your criteria...</div>
+      </div>
+    );
+  }
+
+  return (
+    <form className="ew-customer-form-card" onSubmit={handleFormSubmit}>
+      <div className="ew-customer-form-title">Start a Booking</div>
+      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', padding: '0 20px', marginTop: '-4px', marginBottom: '16px' }}>
+        Please provide at least one detail below to find the property.
+      </div>
+      <div className="ew-customer-form-body">
+        <div className="ew-form-group">
+          <label className="ew-form-label">Project Name</label>
+          <input type="text" className="ew-form-input" placeholder="e.g. Sky Heights" value={project} onChange={e => setProject(e.target.value)} />
+        </div>
+        <div className="ew-form-group">
+          <label className="ew-form-label">Unit Number</label>
+          <input type="text" className="ew-form-input" placeholder="e.g. A-1203" value={unit} onChange={e => setUnit(e.target.value)} />
+        </div>
+        <div className="ew-form-group">
+          <label className="ew-form-label">Location (Optional)</label>
+          <input type="text" className="ew-form-input" placeholder="e.g. Wakad" value={location} onChange={e => setLocation(e.target.value)} />
+        </div>
+        <div className="ew-form-group">
+          <label className="ew-form-label">Budget (Optional)</label>
+          <input type="text" className="ew-form-input" placeholder="e.g. 1.2 Cr" value={budget} onChange={e => setBudget(e.target.value)} />
+        </div>
+        <div className="ew-form-group">
+          <label className="ew-form-label">BHK (Optional)</label>
+          <input type="text" className="ew-form-input" placeholder="e.g. 2" value={bhk} onChange={e => setBhk(e.target.value)} />
+        </div>
+      </div>
+      <button type="submit" className="ew-btn ew-btn-primary ew-customer-form-submit" disabled={!project && !unit && !location && !budget && !bhk}>
+        Book Property
+      </button>
+    </form>
   );
 };
 
@@ -529,7 +621,7 @@ const CustomerFormCard = ({ onSubmit }) => {
 
 const animatedMessageIds = new Set();
 
-const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBooking, onQuickAction, onEditMessage, onViewDetails, onAnimationComplete }) => {
+const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBooking, onQuickAction, onEditMessage, onRegenerate, onViewDetails, onAnimationComplete }) => {
   const { sender, text, type, payload, actions, isThinking, steps } = message;
   
   const [visibleStepsCount, setVisibleStepsCount] = useState(0);
@@ -729,6 +821,13 @@ const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBo
                 />
               )}
 
+              {type === 'property_search_form' && (
+                <PropertySearchFormCard 
+                  onSubmit={(details) => onQuickAction && onQuickAction(details)} 
+                />
+              )}
+
+
               {(type === 'customer_form' || type === 'properties_with_form') && (
                 <CustomerFormCard 
                   onSubmit={(details) => onQuickAction && onQuickAction('submit_customer_form', details)} 
@@ -745,6 +844,14 @@ const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBo
 
               {type === 'marketing_campaign' && payload && (
                 <MarketingCard payload={payload} onAction={onQuickAction} />
+              )}
+
+              {type === 'workflow_execution' && payload && (
+                <WorkflowExecutionCard payload={payload} />
+              )}
+
+              {type === 'business_summary' && payload && (
+                <BusinessSummaryCard payload={payload} />
               )}
 
               {type === 'booking_complete' && payload && (
@@ -817,7 +924,7 @@ const MessageBubble = ({ message, onSelectProperty, onConfirmBooking, onCancelBo
                 </div>
               )}
 
-              <ReactionBar />
+              <ReactionBar onRegenerate={onRegenerate} text={text} />
             </div>
           </div>
         </div>

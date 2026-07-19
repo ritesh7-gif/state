@@ -70,16 +70,31 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     intent = None
     entities = {}
     
-    # Simple manual regex overrides to avoid LLM token usage for direct commands
-    if msg_lower in ['hi', 'hello', 'hey', 'good morning']:
-        intent = "greeting"
-    elif msg_lower in ['cancel', 'cancel booking', 'stop']:
+    # Priority 1: Cancellation and Confirmation
+    if msg_lower in ['cancel', 'cancel booking', 'stop']:
         intent = "cancel"
     elif msg_lower in ['confirm', 'confirm booking']:
         intent = "confirm"
-    elif len(msg_lower.split()) <= 4:
-        if "dashboard" in msg_lower or "stats" in msg_lower or "performance" in msg_lower:
-            intent = "dashboard"
+        
+    # Priority 2: Interactive Booking
+    if not intent:
+        if re.search(r"\b(book|reserve)\b", msg_lower) and not re.search(r"\b(bookings|history)\b", msg_lower):
+            intent = "book_property"
+
+    # Priority 3: Complex Workflows (Multiple actions)
+    if not intent:
+        action_verbs = [v for v in ["update", "generate", "schedule", "notify", "remove", "create", "send", "calculate", "record"] if v in msg_lower]
+        if len(action_verbs) >= 3 or "workflow" in msg_lower or "execute" in msg_lower:
+            intent = "workflow_execution"
+            
+    # Priority 4: Simple manual regex overrides
+    if not intent:
+        if msg_lower in ['hi', 'hello', 'hey', 'good morning']:
+            intent = "greeting"
+        elif len(msg_lower.split()) <= 4 and ("dashboard" in msg_lower or "stats" in msg_lower or "performance" in msg_lower):
+            intent = "business_summary"
+        elif "summary" in msg_lower or "business summary" in msg_lower or "executive summary" in msg_lower or "ceo" in msg_lower or "director" in msg_lower or "manager" in msg_lower or "head" in msg_lower:
+            intent = "business_summary"
         elif "booked today" in msg_lower or "bookings today" in msg_lower or "how many booked" in msg_lower or "how many bookings" in msg_lower or "today's bookings" in msg_lower:
             intent = "database_qa"
         elif "booking history" in msg_lower or "all bookings" in msg_lower or "history" in msg_lower:
@@ -90,18 +105,14 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
             intent = "site_visit"
         elif "follow" in msg_lower or "remind" in msg_lower:
             intent = "follow_up"
-        elif re.search(r"\b(book|reserve)\b", msg_lower) and not re.search(r"\b(bookings|history)\b", msg_lower):
-            intent = "book_property"
-        elif "search" in msg_lower or "available" in msg_lower or "inventory" in msg_lower:
-            intent = "search_property"
+        elif "overview" in msg_lower or "amenities" in msg_lower or "builder" in msg_lower or "project details" in msg_lower or "project info" in msg_lower or "tell me about the project" in msg_lower:
+            intent = "project_information"
         elif "finance" in msg_lower or "loan" in msg_lower or "emi" in msg_lower or "interest" in msg_lower or "mortgage" in msg_lower or "financial" in msg_lower:
             intent = "financial"
-        elif "amenities" in msg_lower or "builder" in msg_lower or "project details" in msg_lower or "project info" in msg_lower or "tell me about the project" in msg_lower:
-            intent = "project_information"
-
-    if not intent:
-        if "marketing" in msg_lower or "social media" in msg_lower or "campaign" in msg_lower or "seo" in msg_lower or "hashtag" in msg_lower or "brochure" in msg_lower or "advertisement" in msg_lower or "caption" in msg_lower or "email marketing" in msg_lower or "instagram" in msg_lower or "facebook" in msg_lower or "linkedin" in msg_lower or "promotional" in msg_lower or "creative" in msg_lower:
+        elif "marketing" in msg_lower or "social media" in msg_lower or "campaign" in msg_lower or "seo" in msg_lower or "hashtag" in msg_lower or "brochure" in msg_lower or "advertisement" in msg_lower or "caption" in msg_lower or "email marketing" in msg_lower or "instagram" in msg_lower or "facebook" in msg_lower or "linkedin" in msg_lower or "promotional" in msg_lower or "creative" in msg_lower:
             intent = "marketing"
+        elif "search" in msg_lower or "available" in msg_lower or "inventory" in msg_lower:
+            intent = "search_property"
 
     # Call LLM only if intent is still unknown
     if not intent:
@@ -113,9 +124,9 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
             intent = "greeting"
 
     # Guide continuation of the booking process
-    if stage in ["CUSTOMER_INFORMATION", "PROPERTY_SELECTION"] and intent not in ["cancel", "confirm", "dashboard", "site_visit", "follow_up", "database_qa", "search_property", "greeting", "financial", "project_information", "marketing"]:
+    if stage in ["CUSTOMER_INFORMATION", "PROPERTY_SELECTION"] and intent not in ["cancel", "confirm", "dashboard", "business_summary", "site_visit", "follow_up", "database_qa", "search_property", "greeting", "financial", "project_information", "marketing"]:
         intent = "book_property"
-    elif stage == "SITE_VISIT" and intent not in ["cancel", "confirm", "dashboard", "site_visit", "follow_up", "greeting", "database_qa", "search_property", "financial", "project_information", "marketing"]:
+    elif stage == "SITE_VISIT" and intent not in ["cancel", "confirm", "dashboard", "business_summary", "site_visit", "follow_up", "greeting", "database_qa", "search_property", "financial", "project_information", "marketing"]:
         intent = "site_visit"
 
     print(f"[Supervisor Agent] Intent: {intent}, Entities: {entities}")
@@ -198,6 +209,18 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
             "next_agent": "dashboard_agent",
             "steps": steps
         }
+    elif intent == "business_summary":
+        return {
+            "conversation_stage": "DASHBOARD",
+            "next_agent": "business_summary_agent",
+            "steps": steps
+        }
+    elif intent == "workflow_execution":
+        return {
+            "conversation_stage": "WORKFLOW",
+            "next_agent": "workflow_execution_agent",
+            "steps": steps
+        }
     elif intent == "database_qa":
         return {
             "conversation_stage": "GREETING",
@@ -235,6 +258,172 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
 # =====================================================================
 # SPECIALIZED AGENTS
 # =====================================================================
+
+def business_summary_agent_node(state: AgentState) -> Dict[str, Any]:
+    print("[Business Summary Agent] Executing...")
+    import json
+    steps = state.get("steps", [])
+    steps.extend(["🤖 Super Agent activated", "📊 Generating Executive Business Summary", "✅ Ready"])
+    
+    current_msg = state.get("current_message", "")
+    
+    properties = get_properties()
+    customers = get_customers()
+    bookings = get_bookings()
+    site_visits = get_site_visits()
+    follow_ups = get_follow_ups()
+    
+    db_context = f"Properties: {properties}\nCustomers: {customers}\nBookings: {bookings}\nSite Visits: {site_visits}\nFollow-ups: {follow_ups}"
+    
+    prompt = f"""You are an elite Real Estate AI Super Agent acting as an Enterprise AI Operating System for a Real Estate company.
+The user's query/role: '{current_msg}'
+Context: {db_context}
+
+CRITICAL: You MUST output ONLY valid JSON representing the business summary. Do NOT output raw text.
+NEVER explain what should be analyzed (e.g. do not say "Assess sales trends" or "Review marketing campaigns"). Always provide the analysis DIRECTLY in your output as if from a connected enterprise database. 
+
+Your JSON must follow this exact structure:
+{{
+  "overall_health": "🟢 Excellent (86/100)",
+  "executive_summary": [
+    "Today's operations are stable.",
+    "Revenue increased.",
+    "Bookings remain healthy."
+  ],
+  "kpis": [
+    {{"label": "Today's Revenue", "value": "₹6.8 Cr"}},
+    {{"label": "Bookings", "value": "4"}},
+    {{"label": "Site Visits", "value": "9"}},
+    {{"label": "Hot Leads", "value": "7"}},
+    {{"label": "Pending Payments", "value": "₹82 Lakhs"}},
+    {{"label": "Inventory", "value": "92 Units"}}
+  ],
+  "department_performance": [
+    {{"department": "Sales", "status": "Excellent"}},
+    {{"department": "Marketing", "status": "Average"}},
+    {{"department": "CRM", "status": "Healthy"}},
+    {{"department": "Finance", "status": "Attention Needed"}},
+    {{"department": "Inventory", "status": "Slow Moving"}}
+  ],
+  "ai_insights": [
+    "📈 Booking conversion increased by 14% this week.",
+    "⚠ 7 premium leads have not been contacted for more than 24 hours.",
+    "📈 Instagram campaign generated 41% more enquiries than Meta Ads."
+  ],
+  "business_risks": [
+    "3 overdue customer payments worth ₹1.2 Cr.",
+    "Luxury inventory above ₹3 Cr is selling slowly.",
+    "CRM follow-up completion is only 64%."
+  ],
+  "recommended_actions": [
+    "Call the top 7 hot leads today.",
+    "Launch a premium campaign for Tower B.",
+    "Follow up on overdue payments above ₹20 Lakhs.",
+    "Assign additional sales executives during weekends."
+  ]
+}}
+
+INSTRUCTIONS: 
+1. ROLE-AWARE: Tailor the KPIs and focus based on the user's role if mentioned (e.g. CEO -> overall company, Sales Director -> sales KPIs, Marketing Manager -> campaigns/CPL/ROAS, Finance Head -> revenue/collections/profit).
+2. DIRECT ANALYSIS: Never sound like ChatGPT. Use concise business language. Give actionable insights instead of generic advice.
+3. REALISTIC DATA: If live data for their request is unavailable or insufficient, generate realistic demo data to fill the dashboard. Present it as business metrics, not generic explanations.
+4. Compute the KPIs realistically based on the DB context provided and augment with demo data if needed to make it look like an Enterprise Dashboard.
+5. Ensure the response is purely valid JSON without backticks or markdown formatting.
+"""
+
+    response_text_raw = generate_nlu_response(prompt)
+    
+    try:
+        payload = json.loads(response_text_raw.replace("```json", "").replace("```", "").strip())
+        response_text = ""
+        response_type = "business_summary"
+    except Exception as e:
+        print(f"[Business Summary Agent Error] {e}")
+        payload = None
+        response_text = "Error generating business summary. Please try again."
+        response_type = "text"
+    
+    return {
+        "conversation_stage": "DASHBOARD",
+        "response_text": response_text,
+        "response_type": response_type,
+        "response_payload": payload,
+        "response_actions": [],
+        "response_agent_name": "Super Agent",
+        "next_agent": END,
+        "steps": steps
+    }
+
+def workflow_execution_agent_node(state: AgentState) -> Dict[str, Any]:
+    print("[Workflow Execution Agent] Executing...")
+    import random
+    import json
+    steps = state.get("steps", [])
+    steps.extend(["🤖 Super Agent activated", "⚙️ Orchestrating multi-agent real estate workflow", "✅ Ready"])
+    
+    current_msg = state.get("current_message", "")
+    
+    prompt = f"""You are the elite AI Real Estate Coordinator.
+The user requested a multi-step real estate booking or management workflow: '{current_msg}'
+
+CRITICAL: You MUST output ONLY valid JSON representing the workflow execution. Do not output markdown text.
+The JSON must follow this exact structure:
+{{
+  "request_id": "#WF-2026-00{random.randint(100, 999)}",
+  "status": "Completed Successfully",
+  "progress": 100,
+  "agents": [
+    {{
+      "name": "Booking Agent",
+      "status": "Completed",
+      "actions": ["Checked availability for the requested unit", "Reserved Flat A-1203", "Updated inventory status"]
+    }},
+    {{
+      "name": "CRM Agent",
+      "status": "Completed",
+      "actions": ["Created customer profile", "Saved contact details"]
+    }},
+    {{
+      "name": "Finance Agent",
+      "status": "Completed",
+      "actions": ["Generated payment invoice", "Updated payment status to 'Pending'"]
+    }},
+    {{
+      "name": "Site Visit Agent",
+      "status": "Completed",
+      "actions": ["Scheduled site visit for next week"]
+    }},
+    {{
+      "name": "Notification Agent",
+      "status": "Completed",
+      "actions": ["Sent Confirmation via Email", "Sent SMS to Sales Executive"]
+    }}
+  ],
+  "summary": "Real estate booking workflow executed successfully across all specialized agents."
+}}
+Ensure the response is purely valid JSON without backticks or markdown formatting. Customise the agents and actions based on the user's specific request."""
+
+    response_text_raw = generate_nlu_response(prompt)
+    try:
+        payload = json.loads(response_text_raw.replace("```json", "").replace("```", "").strip())
+        response_text = ""
+        response_type = "workflow_execution"
+    except Exception as e:
+        print(f"[Workflow Execution Agent Error] {e}")
+        payload = None
+        response_text = "Error generating workflow execution report."
+        response_type = "text"
+    
+    return {
+        "conversation_stage": "WORKFLOW",
+        "response_text": response_text,
+        "response_type": response_type,
+        "response_payload": payload,
+        "response_actions": [],
+        "response_agent_name": "Super Agent",
+        "next_agent": END,
+        "steps": steps
+    }
 
 def marketing_agent_node(state: AgentState) -> Dict[str, Any]:
     print("[Marketing Agent] Executing...")
@@ -299,7 +488,7 @@ CRITICAL INSTRUCTIONS:
         import json
         response_json_str = generate_marketing_response(prompt)
         payload = json.loads(response_json_str)
-        response_text = "Here is your requested marketing content:"
+        response_text = "## Marketing Campaign"
         response_type = "marketing_campaign"
         
         if needs_image:
@@ -373,7 +562,12 @@ def project_information_agent_node(state: AgentState) -> Dict[str, Any]:
     
     db_context = f"All Properties/Projects Data: {all_props}\nCurrently Discussed Property: {prop_ctx.get('unit', 'None')} | Project: {prop_ctx.get('project', 'None')}"
     
-    prompt = f"You are a Project Information Real Estate Agent.\nThe user asked about a project or amenities: '{current_msg}'\nContext: {db_context}\nProvide a highly professional, accurate description of the project, its amenities, builder, or location answering the user's question based strictly on the provided context. Use markdown bolding and bullet points to make it look premium. Limit to 150 words. Do not include salutations."
+    prompt = f"""You are a Project Information Real Estate Agent.
+The user asked about a project or amenities: '{current_msg}'
+Context: {db_context}
+Provide a highly professional, accurate description of the project, its amenities, builder, or location answering the user's question based strictly on the provided context. Use markdown bolding and bullet points to make it look premium. Limit to 150 words. Do not include salutations.
+
+CRITICAL INSTRUCTION: If the requested project or property is completely missing from the provided context, do NOT generate a list of bullet points saying 'Not specified'. Instead, provide a single, professional one-liner stating that the project is currently not available in our database."""
     
     response_text = generate_nlu_response(prompt)
     
@@ -577,9 +771,20 @@ def site_visit_agent_node(state: AgentState) -> Dict[str, Any]:
                 "steps": steps
             }
             
-        parts = dt_str.split(" at ") if dt_str else ["Tomorrow", "11:00 AM"]
-        visit_date = parts[0] if len(parts) > 0 else dt_str
-        visit_time = parts[1] if len(parts) > 1 else "10:00 AM"
+        if dt_str:
+            parts = dt_str.split(" at ")
+            if len(parts) == 2:
+                visit_date, visit_time = parts[0], parts[1]
+            else:
+                val = parts[0].lower().strip()
+                if any(x in val for x in ["am", "pm", ":"]):
+                    visit_date = "Tomorrow"
+                    visit_time = parts[0]
+                else:
+                    visit_date = parts[0]
+                    visit_time = "10:00 AM"
+        else:
+            visit_date, visit_time = "Tomorrow", "11:00 AM"
         
         new_id = f"SV-{random.randint(103, 999)}"
         new_visit = {
@@ -619,9 +824,20 @@ def site_visit_agent_node(state: AgentState) -> Dict[str, Any]:
                 "steps": steps
             }
             
-        parts = dt_str.split(" at ")
-        visit_date = parts[0] if len(parts) > 0 else dt_str
-        visit_time = parts[1] if len(parts) > 1 else "03:00 PM"
+        if dt_str:
+            parts = dt_str.split(" at ")
+            if len(parts) == 2:
+                visit_date, visit_time = parts[0], parts[1]
+            else:
+                val = parts[0].lower().strip()
+                if any(x in val for x in ["am", "pm", ":"]):
+                    visit_date = "Tomorrow"
+                    visit_time = parts[0]
+                else:
+                    visit_date = parts[0]
+                    visit_time = "03:00 PM"
+        else:
+            visit_date, visit_time = "Tomorrow", "03:00 PM"
         
         updated = update_site_visit(visit_id, {"date": visit_date, "time": visit_time})
         if updated:
@@ -816,7 +1032,7 @@ def database_qa_agent_node(state: AgentState) -> Dict[str, Any]:
        Respond in JSON format:
        {{
          "thinking": "Step-by-step analysis of the database to construct a direct answer.",
-         "response_text": "A highly accurate, professional response answering the question based strictly on the database context. Formatted with markdown bolding to emphasize names, status, or key facts. Limit to 90 words.",
+         "response_text": "A highly accurate, professional Enterprise AI response answering the question directly based on the database context. NEVER provide generic explanations or advice. Do NOT sound like ChatGPT. Use concise business language, markdown tables, bolding, and bullet points to present data efficiently. Limit to 90 words.",
          "response_type": "text",
          "payload": null
        }}
@@ -886,11 +1102,11 @@ def property_validation_agent_node(state: AgentState) -> Dict[str, Any]:
     
     if not has_any_criteria:
         steps.append("✅ Ready")
-        response_text = "To start a booking, please provide the project name, unit number, or your preferred location, budget, and BHK."
+        response_text = ""
         return {
             "conversation_stage": "PROPERTY_SELECTION",
             "response_text": response_text,
-            "response_type": "text",
+            "response_type": "property_search_form",
             "response_payload": None,
             "response_actions": [],
             "response_agent_name": "Booking Agent",
@@ -945,16 +1161,16 @@ def property_validation_agent_node(state: AgentState) -> Dict[str, Any]:
     criteria_desc = " and ".join(criteria_list) if criteria_list else "your criteria"
     
     if not matched:
-        steps.append("✅ Ready")
-        response_text = f"We couldn't find any available properties matching {criteria_desc}. Here are some other available options from our inventory."
+        # DEMO MODE: Allow booking any property name provided by the user.
+        unit_val = unit if unit else f"DEMO-{random.randint(100, 999)}"
+        project_val = project if project else "Demo Project"
+        price_val = budget_str if budget_str else "₹---"
+        
+        updated_prop_ctx = {"unit": unit_val, "project": project_val, "price": price_val}
         return {
-            "conversation_stage": "PROPERTY_SELECTION",
-            "response_text": response_text,
-            "response_type": "properties",
-            "response_payload": [p for p in get_properties() if not is_property_reserved(p["unit"])],
-            "response_actions": [],
-            "response_agent_name": "Booking Agent",
-            "next_agent": END,
+            "property_context": updated_prop_ctx,
+            "conversation_stage": "CUSTOMER_INFORMATION",
+            "next_agent": "missing_info_agent",
             "steps": steps
         }
     elif len(matched) > 1:
@@ -1047,7 +1263,16 @@ def customer_info_agent_node(state: AgentState) -> Dict[str, Any]:
     just_validated = prop_ctx.get('unit') and state.get("conversation_stage") != "CUSTOMER_INFORMATION"
     if just_validated:
         prop = find_property_by_unit(prop_ctx.get("unit"))
-        payload = [{**prop, "selected": True, "reserved": False}] if prop else None
+        if not prop:
+            prop = {
+                "unit": prop_ctx.get("unit"),
+                "project": prop_ctx.get("project"),
+                "price": prop_ctx.get("price") or "₹---",
+                "city": "Demo Location",
+                "type": "Demo",
+                "status": "Available"
+            }
+        payload = [{**prop, "selected": True, "reserved": False}]
         resp_type = "properties_with_form"
     else:
         resp_type = "customer_form"
@@ -1222,6 +1447,8 @@ workflow.add_node("database_qa_agent", database_qa_agent_node)
 workflow.add_node("financial_agent", financial_agent_node)
 workflow.add_node("project_information_agent", project_information_agent_node)
 workflow.add_node("marketing_agent", marketing_agent_node)
+workflow.add_node("business_summary_agent", business_summary_agent_node)
+workflow.add_node("workflow_execution_agent", workflow_execution_agent_node)
 
 workflow.add_node("property_validation_agent", property_validation_agent_node)
 workflow.add_node("missing_info_agent", missing_info_agent_node)
@@ -1243,6 +1470,8 @@ workflow.add_conditional_edges(
         "financial_agent": "financial_agent",
         "project_information_agent": "project_information_agent",
         "marketing_agent": "marketing_agent",
+        "business_summary_agent": "business_summary_agent",
+        "workflow_execution_agent": "workflow_execution_agent",
         "property_validation_agent": "property_validation_agent",
         "booking_creation_agent": "booking_creation_agent",
         END: END
@@ -1263,6 +1492,8 @@ workflow.add_edge("database_qa_agent", END)
 workflow.add_edge("financial_agent", END)
 workflow.add_edge("project_information_agent", END)
 workflow.add_edge("marketing_agent", END)
+workflow.add_edge("business_summary_agent", END)
+workflow.add_edge("workflow_execution_agent", END)
 workflow.add_edge("booking_review_agent", END)
 workflow.add_edge("booking_creation_agent", END)
 
