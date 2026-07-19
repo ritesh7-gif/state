@@ -139,7 +139,15 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     follow_ctx = state.get("follow_up_context") or {}
     
     # Entity Extraction: automatically update context and never ask again
-    if entities.get("property_unit"): prop_ctx["unit"] = entities.get("property_unit")
+    if entities.get("property_unit"): 
+        # Clear broad search criteria if a specific unit is provided
+        prop_ctx.pop("location", None)
+        prop_ctx.pop("type", None)
+        prop_ctx.pop("budget", None)
+        prop_ctx.pop("builder", None)
+        prop_ctx.pop("amenities", None)
+        prop_ctx["unit"] = entities.get("property_unit")
+        
     if entities.get("project_name"): prop_ctx["project"] = entities.get("project_name")
     if entities.get("location"): prop_ctx["location"] = entities.get("location")
     if entities.get("bhk"): prop_ctx["type"] = str(entities.get("bhk"))
